@@ -8,3 +8,9 @@ MONGO_URI=mongodb+srv://db_username:db_password@cluster0.qnexp.mongodb.net/db_na
 JWT_SECRET=mySuperSecretKey
 JWT_ALGORITHM="HS256"
 JWT_EXPIRATION=3600
+
+# Feature
+Đăng ký, Đăng nhập, Đăng xuất
+CRUD quiz
+Làm bài quiz
+Upload PDF sang quiz (LangChain)
