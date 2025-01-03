@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tệp cấu hình môi trường
+.env
+.env.local
+
+# IDE và editor configurations
+.idea/
+.vscode/
+
+# Tệp hệ điều hành
+.DS_Store
+Thumbs.db
+
+# Build output
+build/
+dist/
+
+# Các tệp biên dịch
+*.out
+*.exe
+*.obj

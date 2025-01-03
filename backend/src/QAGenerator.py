@@ -2,7 +2,7 @@ from langchain.prompts import PromptTemplate
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-import json
+import json 
 
 # Load API key from .env file
 load_dotenv()
