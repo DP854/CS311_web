@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import QuizDetail from "./pages/QuizDetail";
 import { AddQuiz, EditQuiz } from "./pages/AddEditQuiz"
 import Upload from "./pages/Upload";
-import Register from "./pages/Register";
+import Register from "./pages/Register"; 
 import Login from "./pages/Login";
 
 function App() {
@@ -18,6 +18,7 @@ function App() {
         <Route path="/upload" element={<Upload />} />
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );
