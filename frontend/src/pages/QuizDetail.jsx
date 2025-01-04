@@ -8,20 +8,18 @@ const QuizDetail = () => {
   const [error, setError] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [result, setResult] = useState(null);
-  console.log("🚀 ~ QuizDetail ~ quiz:", quiz)
-  console.log("🚀 ~ QuizDetail ~ result:", result)
+  const [submitted, setSubmitted] = useState(false);
   console.log("🚀 ~ QuizDetail ~ answers:", answers)
+  console.log("🚀 ~ QuizDetail ~ result:", result)
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
         const token = localStorage.getItem("token");
-
         if (!token) {
           setError("Vui lòng đăng nhập.");
           return;
         }
-
         const response = await axios.get(`http://localhost:8000/api/quizzes/${quiz_name}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,11 +41,23 @@ const QuizDetail = () => {
     const newAnswers = [...answers];
     if (value === 'True' || value === 'False') {
       newAnswers[index] = value;
-    }
-    else {
+    } else {
       newAnswers[index] = idx.toString();
     }
     setAnswers(newAnswers);
+  };
+
+  const isAnswerCorrect = (questionIndex) => {
+    if (!result || !result.answers) return null;
+    const userAnswer = answers[questionIndex];
+    const correctAnswer = result.answers[questionIndex];
+    
+    // Handle boolean answers
+    if (typeof correctAnswer === 'boolean') {
+      return userAnswer === (correctAnswer ? 'True' : 'False');
+    }
+    // Handle numeric answers
+    return userAnswer === correctAnswer.toString();
   };
 
   const submitQuiz = async () => {
@@ -63,6 +73,7 @@ const QuizDetail = () => {
         }
       );
       setResult(response.data);
+      setSubmitted(true);
     } catch (err) {
       setError("Không thể gửi bài làm.");
     }
@@ -78,42 +89,60 @@ const QuizDetail = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-500 p-6">
-      <h1 className="text-4xl font-bold mb-6">{quiz.quiz_name}</h1>
+      <h1 className="text-4xl font-bold mb-6 text-white">{quiz.quiz_name}</h1>
       <div className="bg-white p-6 rounded-lg shadow w-full max-w-3xl">
-        <h2 className="text-2xl font-bold mb-4">{quiz.quiz_name}</h2>
         <ul className="space-y-4">
           {quiz.questions.map((question, index) => (
             <li key={index} className="p-4 border rounded-lg bg-gray-50">
               <h3 className="font-semibold">Câu {index + 1}. {question.question}</h3>
-              <div className="mt-2">
-                {question.options.map((option, idx) => (
-                  <label key={idx} className="block">
-                    <input
-                      type="radio"
-                      name={`question-${index}`}
-                      value={option}
-                      onChange={() => handleAnswerChange(index, option, idx)}
-                    />
-                    {option}
-                  </label>
-                ))}
+              <div className="mt-2 space-y-2">
+                {question.options.map((option, idx) => {
+                  const isCorrect = submitted && isAnswerCorrect(index);
+                  const isSelected = answers[index] === (option === 'True' || option === 'False' ? option : idx.toString());
+                  
+                  return (
+                    <label 
+                      key={idx} 
+                      className={`block p-2 rounded cursor-pointer transition-colors
+                        ${isSelected && submitted ? (isCorrect ? 'text-green-600' : 'text-red-600') : ''}
+                        ${isSelected ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                    >
+                      <input
+                        type="radio"
+                        name={`question-${index}`}
+                        value={option}
+                        onChange={() => handleAnswerChange(index, option, idx)}
+                        disabled={submitted}
+                        className="mr-2"
+                      />
+                      <span>{option}</span>
+                    </label>
+                  );
+                })}
               </div>
             </li>
           ))}
         </ul>
-        <button
-          onClick={submitQuiz}
-          className="mt-6 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 transition"
-        >
-          Nộp bài
-        </button>
-        {result && (
+        
+        {!submitted ? (
+          <button
+            onClick={submitQuiz}
+            className="mt-6 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
+          >
+            Nộp bài
+          </button>
+        ) : (
           <div className="mt-6 bg-gray-100 p-4 rounded">
-            <p className="font-bold">Kết quả: {result.score}/{result.total}</p>
-            <p>Đáp án đúng: {result.answers.join(", ")}</p>
+            <p className="font-bold text-lg mb-2">
+              Kết quả: <span className="text-blue-600">{result.score}/{result.total}</span>
+            </p>
           </div>
         )}
-        <Link to="/home" className="mt-6 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+        
+        <Link 
+          to="/home" 
+          className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+        >
           Quay lại
         </Link>
       </div>
