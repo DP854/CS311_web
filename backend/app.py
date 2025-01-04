@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel 
 from bson import ObjectId
 from typing import List, Optional
 import os
@@ -97,7 +97,7 @@ async def login_user(user: Login):
     if not verify_password(user.password, db_user["password"]):
         raise HTTPException(status_code=400, detail="Mật khẩu không chính xác")
 
-    token = create_jwt({"username": user.username})
+    token = create_jwt({"username": user.username}) 
     
     return {"token": token}
 
@@ -230,9 +230,22 @@ async def attempt_quiz(quiz_name: str, answers: List[str], current_user=Depends(
     if not quiz:
         raise HTTPException(status_code=404, detail="Không tìm thấy quiz")
 
+    # Kiểm tra nếu câu trả lời là "True" hoặc "False", chuyển nó thành boolean
+    processed_answers = []
+    for ans in answers:
+        if ans == "True":
+            processed_answers.append(True)
+        elif ans == "False":
+            processed_answers.append(False)
+        else:
+            try:
+                processed_answers.append(int(ans))  # Chuyển đổi chỉ mục thành số nguyên
+            except ValueError:
+                processed_answers.append(ans)  # Nếu không phải "True", "False" hay số, giữ nguyên
+    
     # Tính điểm
     correct_answers = [q["answer"] for q in quiz["questions"]]
-    score = sum(1 for i, ans in enumerate(answers) if ans == correct_answers[i])
+    score = sum(1 for i, ans in enumerate(processed_answers) if ans == correct_answers[i])
 
     # Lưu kết quả làm quiz
     attempt = {
@@ -291,7 +304,7 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
     
-    csv_file = get_csv(file_location, user)
+    csv_file = await get_csv(file_location, user)
     csv_filename = os.path.basename(csv_file)
 
     return {"csvFilename": csv_filename}

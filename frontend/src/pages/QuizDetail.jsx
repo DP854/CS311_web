@@ -8,6 +8,9 @@ const QuizDetail = () => {
   const [error, setError] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [result, setResult] = useState(null);
+  console.log("🚀 ~ QuizDetail ~ quiz:", quiz)
+  console.log("🚀 ~ QuizDetail ~ result:", result)
+  console.log("🚀 ~ QuizDetail ~ answers:", answers)
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -36,9 +39,14 @@ const QuizDetail = () => {
     }
   }, [quiz_name]);
 
-  const handleAnswerChange = (index, value) => {
+  const handleAnswerChange = (index, value, idx) => {
     const newAnswers = [...answers];
-    newAnswers[index] = value;
+    if (value === 'True' || value === 'False') {
+      newAnswers[index] = value;
+    }
+    else {
+      newAnswers[index] = idx.toString();
+    }
     setAnswers(newAnswers);
   };
 
@@ -84,7 +92,7 @@ const QuizDetail = () => {
                       type="radio"
                       name={`question-${index}`}
                       value={option}
-                      onChange={() => handleAnswerChange(index, option)}
+                      onChange={() => handleAnswerChange(index, option, idx)}
                     />
                     {option}
                   </label>

@@ -16,7 +16,7 @@ function App() {
         <Route path="/add-quiz" element={<AddQuiz />} />
         <Route path="/edit/:quiz_name" element={<EditQuiz />} />
         <Route path="/upload" element={<Upload />} />
-        <Route path="/" element={<Register />} />
+        <Route path="/" element={<Register />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

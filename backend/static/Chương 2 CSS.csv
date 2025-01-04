@@ -1,21 +1,47 @@
 Question,Answer
 CSS stands for Cascading Style Sheets.,True
-CSS is used to describe how to display elements on a webpage created using HTML.,True
-CSS cannot be reused for other websites.,False
-Inline Style Sheets define styles within the style attribute of each HTML tag.,True
-Embedding Style Sheets are defined within the <style> tag in the HTML document's <head> section.,True
-External Style Sheets are stored in files with a .html extension.,False
-"The order of priority for applying styles in web pages (from highest to lowest) is: Inline style sheet, Embedding style sheet, External style sheet, Browser Default.",True
-Selectors are not used to apply styles to elements in CSS.,False
-Pseudo-elements are used to style a specific part of a selected element.,True
-The `::first-line` pseudo-element selects the first character of a text.,False
-The `::before` pseudo-element inserts content before the selected element.,True
+"CSS is only used to style entire websites, not individual pages.",False
+Inline styles have a higher priority than embedded styles.,True
+External stylesheets are typically saved with a .css extension.,True
+The `@import` directive is used with external stylesheets.,True
+Comments in CSS are denoted by `//` and `//`.,False
+Which of the following is NOT a type of CSS stylesheet?,3
+What is the correct syntax for an external stylesheet link using the `<link>` tag?,0
+What does the selector `#id1` target?,1
+"In order of descending priority, what is the correct order of CSS stylesheet application?",1
+The style for `#id1` and `#id2` are defined using class selectors.,False
+The `maunen` class applies a red background color.,True
+The `::first-line` pseudo-element can style the first line of text.,True
+The `::before` pseudo-element adds content after the selected element.,False
+The `::selection` pseudo-element styles text selected by the user.,True
 Pseudo-classes are used to style elements based on their state.,True
-The `:hover` pseudo-class applies styles when the mouse is over an element.,True
-The `:first-child` pseudo-class styles the first element of a specific type within its parent.,True
-The CSS box model consists of:,0
-Which property is used to set the background color of an element?,0
-Which property is used to set the spacing between the content and the border of an element?,1
-The `position: fixed;` property makes an element:,2
-Which of these is NOT a generic font family?,3
-The `font-size` property can accept which of the following values?,2
+The `a:hover` style should be defined before `a:link` and `a:visited`.,False
+The `:first-child` pseudo-class styles only the first element in the entire document.,False
+The CSS background extends beyond the border of an element.,False
+Which of the following is NOT a valid `background-repeat` value?,3
+What pseudo-element is used to style the first letter of an element?,1
+Which pseudo-class styles a link when the mouse hovers over it?,2
+What property controls the repetition of a background image?,2
+Which of the following selectors targets the first `<p>` tag within another `<p>` tag?,0
+"The `border` attribute can accept only one value for width, style, and color.",False
+The `margin` property allows for setting margins on all four sides of an element.,True
+Padding is the space between the content and the margin of an element.,False
+The `position: fixed` attribute makes an element's position relative to its parent element.,False
+The `overflow` property is used to control what happens when content overflows its container.,True
+"Generic fonts include font types like ""Times New Roman"" and ""Arial"".",False
+Which of the following is NOT a valid value for the `border-style` attribute?,3
+What does the `margin: auto` property do for the left and right margins?,2
+"When using multiple values for the `padding` property, what do the first and second values represent?",2
+Which CSS positioning value makes an element positioned relative to its nearest positioned ancestor?,2
+Which of the following is NOT a generic font category?,3
+What CSS property controls the space between lines of text?,1
+The font size and family attributes are optional in a font line.,False
+Multiple font properties can be combined onto a single line.,True
+The `line-height` attribute must always be present in a font declaration.,False
+"If used, the `line-height` attribute must appear before the `size` attribute.",False
+"The order of the `style`, `variant`, and `weight` attributes is fixed.",False
+Which of the following is NOT a valid text-align value?,3
+What property controls the spacing between lines of text?,2
+Which property is used to control the spacing between characters?,1
+Which text-transform value converts all text to uppercase?,2
+Which property allows you to control the direction of text (left-to-right or right-to-left)?,1

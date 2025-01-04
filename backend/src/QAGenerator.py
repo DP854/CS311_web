@@ -16,17 +16,25 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 prompt_template = """
 You are an expert at creating True/False and Multiple Choice questions based on documentation.
 Your goal is to prepare students for their test.
-For each text chunk below, create some True/False question and some Multiple Choice question and answer based on length of text, no dragging, based on this format.
+For each text chunk below, create the following:
 
-Format: The answer must be returned in array format
+- **True/False questions**: + Each question must be based on key facts or concepts from the text.
+                            + The question should be concise and easy to answer.
+- **Multiple Choice questions**: + Each question must have four options, one of which is correct. 
+                                 + The questions should assess comprehension of important details from the text.
 
-    "question": The question , 
-    "options": ["True", "False"], 
-    "answer": A boolean representing the answer
-,
-    "question": The question, 
-    "options": An array of 4 strings representing the choices, 
-    "answer": The number corresponding to the index of the correct answer in the options array
+Format the output like this (The answer must be returned in array format):
+1. For True/False questions:
+    - "question": The question,
+    - "options": ["True", "False"],
+    - "answer": A boolean representing the correct answer (True or False).
+   
+2. For Multiple Choice questions:
+    - "question": The question,
+    - "options": An array of 4 strings representing the choices,
+    - "answer": The index number (0-3) of the correct answer in the options array.
+
+Ensure the questions are relevant to the content and concise.
 
 Based on the following passage:
 -----------

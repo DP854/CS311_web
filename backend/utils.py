@@ -2,7 +2,8 @@ import os
 import csv
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from langchain.document_loaders import PyPDFLoader
+import re
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from src.QAGenerator import generate_question_from_chunks
@@ -10,6 +11,9 @@ from passlib.context import CryptContext
 import jwt
 from datetime import datetime, timedelta
 from bson import ObjectId
+import asyncio
+from googletrans import Translator
+from langdetect import detect
 
 load_dotenv()
 
@@ -66,21 +70,63 @@ def file_processing(file_path):
     for page in data:
         question_gen += page.page_content
 
+    # Loại bỏ xuống dòng không cần thiết trong đoạn văn
+    question_gen = re.sub(r"(?<!\n)\n(?!\n)", " ", question_gen)
+
+    # Tách các phần quan trọng (tiêu đề, danh sách, bảng)
+    question_gen = re.sub(r"(\n{2,})", "\n\n", question_gen)  # Chuẩn hóa ngắt dòng
+    question_gen = re.sub(r"(?<=\w)-\s+", "", question_gen)  # Gộp các từ bị phân mảnh
+
+    # Chia nhỏ văn bản thành các đoạn có kích thước nhỏ hơn
     splitter_ques_gen = RecursiveCharacterTextSplitter(
         chunk_size=max_token,
         chunk_overlap=200
     )
-
     chunks_ques_gen = splitter_ques_gen.split_text(question_gen)
 
+    # Tạo các Document từ các đoạn đã chia
     document_ques_gen = [Document(page_content=t) for t in chunks_ques_gen]
 
     return document_ques_gen
 
-def llm_pipeline(file_path):
+#Chuyển text qua tiếng anh
+async def translate_text(document_ques_gen):
+    translator = Translator()
+    
+    # Phát hiện ngôn ngữ của văn bản
+    detected_lang = detect(document_ques_gen)
+    
+    # Nếu ngôn ngữ là tiếng Việt, tiến hành dịch sang tiếng Anh
+    if detected_lang == 'vi':
+        translated_text = await translator.translate(document_ques_gen, src='vi', dest='en')
+        return translated_text.text
+    else:
+        # Nếu ngôn ngữ không phải là tiếng Việt, trả về văn bản gốc
+        return document_ques_gen
+
+#Chuyển text qua tiếng anh
+async def translate_documents(documents):
+    # Lặp qua từng document và dịch nội dung
+    translated_documents = []
+    
+    for document in documents:
+        page_content = document.page_content  # Lấy nội dung trang
+        translated_text = await translate_text(page_content)  # Dịch nội dung trang
+        translated_documents.append(translated_text)  # Lưu kết quả dịch vào danh sách
+    
+    return translated_documents
+
+
+async def llm_pipeline(file_path):
     document_ques_gen = file_processing(file_path) 
-    quiz = generate_question_from_chunks(document_ques_gen)
-    return quiz
+    translated_documents = await translate_documents(document_ques_gen)
+    # quiz = generate_question_from_chunks(document_ques_gen)
+    # Thêm từng chunk vào model để xử lí
+    quiz_from_chunk = []
+    for text in translated_documents:
+        quizz = generate_question_from_chunks(text)
+        quiz_from_chunk += quizz
+    return quiz_from_chunk
 
 # Lưu quiz vào MongoDB
 def save_to_mongo(quiz_data, quiz_name, user):
@@ -108,16 +154,17 @@ def save_to_mongo(quiz_data, quiz_name, user):
             {"$push": {"quizzes": id}}
         )
 
-def get_csv(file_path, user):
-    ques_list = llm_pipeline(file_path)
+# Save questions to CSV
+async def get_csv(file_path, user):
+    ques_list = await llm_pipeline(file_path)  # Await the LLM pipeline
     
-    # Chuyển đổi câu hỏi thành dạng quiz
+    # Convert questions into quiz format
     quiz_data = []
     for question in ques_list:
         quiz_data.append({
-            "question": question['question'],  # Lấy câu hỏi
-            "options": question['options'],    # Lấy các lựa chọn
-            "answer": question['answer']       # Lấy câu trả lời
+            "question": question['question'],  # Extract the question
+            "options": question['options'],    # Extract the options
+            "answer": str(question['answer'])  # Convert answer to string ('True' or 'False')
         })
 
     base_folder = 'static/'
@@ -126,15 +173,18 @@ def get_csv(file_path, user):
     quiz_name = os.path.splitext(os.path.basename(file_path))[0]
     output_file = os.path.join(base_folder, f"{quiz_name}.csv")
     
-    # Lưu quiz đầy đủ vào MongoDB (bao gồm nhiều câu hỏi)
+    # Save the quiz to MongoDB (including all questions)
     save_to_mongo(quiz_data, quiz_name, user)
     
-    # Lưu dữ liệu thành file CSV
+    # Save the data to a CSV file
     with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(["Question", "Answer"])
 
         for question in ques_list:
-            csv_writer.writerow([question['question'], question['answer']])
+            # Convert the boolean answer to string for the CSV file
+            csv_writer.writerow([question['question'], str(question['answer'])])
 
     return output_file
+
+
