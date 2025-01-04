@@ -6,7 +6,10 @@ from pydantic import BaseModel
 from bson import ObjectId
 from typing import List, Optional
 import os
-from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection
+from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index
+
+from langchain_community.document_loaders import PyPDFLoader
+from src.QAGenerator import model
 
 app = FastAPI()
 
@@ -54,6 +57,9 @@ class Question(BaseModel):
     question_text: str
     options: List[str]
     correct_answer: str
+
+class ChatRequest(BaseModel):
+    query: str
 
 def get_current_user(authorization: str = Header(None)):
     if not authorization:
@@ -307,4 +313,34 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     csv_file = await get_csv(file_location, user)
     csv_filename = os.path.basename(csv_file)
 
+        # Lưu PDF vào pinecone
+    loader = PyPDFLoader(file_location)
+    documents = loader.load()
+
+    text = "\n".join([doc.page_content for doc in documents])
+
+    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    
+    for i, chunk in enumerate(chunks):
+        embedding = embedding_model.encode(chunk).tolist()
+        pinecone_index.upsert([(f"{file.filename}_{i}", embedding, {"metadata": chunk})])
+
     return {"csvFilename": csv_filename}
+
+@app.post("/chat")
+async def chat_with_pdf(request: ChatRequest):
+    try:
+        query = request.query
+        query_embedding = embedding_model.encode(query).tolist()
+        search_results = pinecone_index.query(
+            namespace="pdf-chatbot",
+            vector=query_embedding, 
+            top_k=3, 
+            include_metadata=True)
+
+        context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
+        prompt = f"Context:\n{context}\n\nQuery:\n{query}\n\nResponse:\n"
+        response = model.generate_content(prompt).candidates[0].content.parts[0].text
+        return { "response": response }
+    except Exception as e:
+        return { "error": str(e) }

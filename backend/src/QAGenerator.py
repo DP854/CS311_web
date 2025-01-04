@@ -80,7 +80,7 @@ def generate_question_from_chunks(text):
         return str(e)
 
 # Export the function for use in app.py
-__all__ = ["generate_question_from_chunks"]
+__all__ = ["generate_question_from_chunks, model"]
 input_text = """
 HTML is a markup language used for structuring content on the web.
 

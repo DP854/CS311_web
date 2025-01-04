@@ -6,6 +6,7 @@ import { AddQuiz, EditQuiz } from "./pages/AddEditQuiz"
 import Upload from "./pages/Upload";
 import Register from "./pages/Register"; 
 import Login from "./pages/Login";
+import Chatbot from "./pages/Chatbot";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Register />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/chat" element={<Chatbot />} />
       </Routes>
     </Router>
   );

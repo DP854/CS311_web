@@ -143,6 +143,12 @@ const AddQuiz = () => {
           Lưu Quiz
         </button>
       </form>
+      <button
+          onClick={() => (window.location.href = "/home")}
+          className="mt-2 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
+        >
+          Quay lại Home
+        </button>
     </div>
   );
 };
@@ -266,6 +272,12 @@ const EditQuiz = () => {
           Lưu Quiz
         </button>
       </form>
+      <button
+          onClick={() => (window.location.href = "/home")}
+          className="mt-2 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
+        >
+          Quay lại Home
+        </button>
     </div>
   );
 };

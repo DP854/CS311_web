@@ -14,8 +14,18 @@ from bson import ObjectId
 import asyncio
 from googletrans import Translator
 from langdetect import detect
+from pinecone import Pinecone
+from sentence_transformers import SentenceTransformer
 
 load_dotenv()
+
+# Pinecone
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
+index_name = os.getenv("PINECONE_INDEX_NAME")
+pinecone_index = pc.Index(index_name)
+
+# Embedding model
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Băm password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

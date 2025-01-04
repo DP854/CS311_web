@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Upload = () => {
@@ -6,6 +7,8 @@ const Upload = () => {
   const [filename, setFilename] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -39,6 +42,7 @@ const Upload = () => {
 
         if (processResponse.data) {
           alert("Tải lên và tạo quiz thành công!");
+          navigate("/home");
         }
       }
     } catch (err) {

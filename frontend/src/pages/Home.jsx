@@ -123,6 +123,12 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <Link
+        to="/chat"
+        className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow hover:bg-blue-800 transition w-full text-center"
+      >
+        Chat với Bot
+      </Link>
     </div>
   );
 };
