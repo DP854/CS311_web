@@ -1,0 +1,21 @@
+Question,Answer
+CSS stands for Cascading Style Sheets.,True
+CSS is used to describe how to display elements on a webpage created using HTML.,True
+CSS cannot be reused for other websites.,False
+Inline Style Sheets define styles within the style attribute of each HTML tag.,True
+Embedding Style Sheets are defined within the <style> tag in the HTML document's <head> section.,True
+External Style Sheets are stored in files with a .html extension.,False
+"The order of priority for applying styles in web pages (from highest to lowest) is: Inline style sheet, Embedding style sheet, External style sheet, Browser Default.",True
+Selectors are not used to apply styles to elements in CSS.,False
+Pseudo-elements are used to style a specific part of a selected element.,True
+The `::first-line` pseudo-element selects the first character of a text.,False
+The `::before` pseudo-element inserts content before the selected element.,True
+Pseudo-classes are used to style elements based on their state.,True
+The `:hover` pseudo-class applies styles when the mouse is over an element.,True
+The `:first-child` pseudo-class styles the first element of a specific type within its parent.,True
+The CSS box model consists of:,0
+Which property is used to set the background color of an element?,0
+Which property is used to set the spacing between the content and the border of an element?,1
+The `position: fixed;` property makes an element:,2
+Which of these is NOT a generic font family?,3
+The `font-size` property can accept which of the following values?,2

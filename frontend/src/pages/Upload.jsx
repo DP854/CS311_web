@@ -49,12 +49,12 @@ const Upload = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-500">
-      <div className="text-center w-full max-w-lg">
-        <h1 className="text-4xl font-bold mb-4">Tải lên PDF và tạo câu hỏi</h1>
+    <div className="flex justify-center items-center min-h-screen bg-blue-200">
+      <div className="text-center w-full max-w-lg bg-white p-8 rounded-xl">
+        <h1 className="text-3xl font-bold mb-4">Tải lên PDF và tạo câu hỏi</h1>
 
         {pdfFile && (
-          <div className="mb-4 text-left bg-white p-4 rounded shadow">
+          <div className="mb-4 text-left bg-gray-200 p-4 rounded shadow">
             <h2 className="text-xl font-semibold">Thông tin file:</h2>
             <p><strong>Tên file:</strong> {filename}</p>
             <p><strong>Kích thước:</strong> {(pdfFile.size / 1024).toFixed(2)} KB</p>
@@ -80,7 +80,7 @@ const Upload = () => {
             ) : (
               <button
                 type="submit"
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+                className="bg-blue-500 text-white py-2 px-4 mt-6 rounded hover:bg-blue-700 transition"
               >
                 Tạo câu hỏi
               </button>
@@ -91,7 +91,7 @@ const Upload = () => {
 
         <button
           onClick={() => (window.location.href = "/home")}
-          className="mt-4 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
+          className="mt-2 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
         >
           Quay lại Home
         </button>

@@ -78,7 +78,7 @@ def file_processing(file_path):
     return document_ques_gen
 
 def llm_pipeline(file_path):
-    document_ques_gen = file_processing(file_path)
+    document_ques_gen = file_processing(file_path) 
     quiz = generate_question_from_chunks(document_ques_gen)
     return quiz
 
@@ -119,7 +119,7 @@ def get_csv(file_path, user):
             "options": question['options'],    # Lấy các lựa chọn
             "answer": question['answer']       # Lấy câu trả lời
         })
-    
+
     base_folder = 'static/'
     if not os.path.isdir(base_folder):
         os.mkdir(base_folder)

@@ -55,11 +55,11 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-500 p-6">
+    <div className="flex flex-col items-center min-h-screen bg-gray-200 p-6">
       <h1 className="text-4xl font-bold mb-6">Quản lý Câu Hỏi Quiz</h1>
       <button
         onClick={handleLogout}
-        className="bg-red-500 text-white py-2 px-6 rounded-lg shadow mb-4"
+        className="bg-red-500 fixed top-5 right-5 text-white py-2 px-6 rounded-lg shadow mb-4 hover:bg-red-700 active:bg-opacity-65"
       >
         Đăng xuất
       </button>
@@ -112,11 +112,11 @@ const Home = () => {
           >
             Thêm Quiz
           </Link>
-          <div className="bg-blue-500 text-white p-6 rounded-lg shadow hover:bg-blue-700 transition w-full text-center">
+          <div className="bg-white text-black p-6 rounded-lg shadow hover:bg-gray-200 transition w-full text-center">
             <h3 className="text-lg font-semibold">Tải lên PDF</h3>
             <p>Chọn để tải lên PDF và tạo câu hỏi.</p>
             <Link to="/upload">
-              <button className="mt-4 bg-white text-blue-500 py-2 px-4 rounded-lg hover:bg-gray-100 transition">
+              <button className="mt-4 bg-blue-400 text-white py-2 px-4 rounded-lg hover:bg-blue-600 active:bg-opacity-65 transition">
                 Tải lên
               </button>
             </Link>
