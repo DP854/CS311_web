@@ -16,7 +16,7 @@ const Upload = () => {
     setFilename(file.name);
   };
 
-  const handleUpload = async (e) => {
+  const handleSubmit = async (e, action) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -33,16 +33,29 @@ const Upload = () => {
       });
 
       if (uploadResponse.data.filename) {
-        const processResponse = await axios.post("http://localhost:8000/process-pdf", formData, {
-          headers: { 
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        if(action === "createQuiz") {
+          const processResponse = await axios.post("http://localhost:8000/process-pdf-to-quiz", formData, {
+            headers: { 
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-        if (processResponse.data) {
-          alert("Tải lên và tạo quiz thành công!");
-          navigate("/home");
+          if (processResponse.data) {
+            alert("Tải lên và tạo quiz thành công!");
+            navigate("/home");
+          }
+        } else if (action === "chatWithBot") {
+            const chatResponse = await axios.post("http://localhost:8000/process-pdf-to-chat", formData, {
+              headers: { 
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if(chatResponse.data) {
+              alert("Tải lên và tạo chat thành công!");
+          }
         }
       }
     } catch (err) {
@@ -53,7 +66,6 @@ const Upload = () => {
   };
 
   return (
-    // <div className="flex justify-center items-center  bg-blue-200">
       <div className="text-center w-full max-w-lg bg-white p-8 rounded-xl">
         <h1 className="text-3xl font-bold mb-4">Tải lên PDF và tạo câu hỏi</h1>
 
@@ -70,7 +82,7 @@ const Upload = () => {
           </div>
         )}
 
-        <form onSubmit={handleUpload}>
+        <form>
           <input
             type="file"
             accept=".pdf"
@@ -80,27 +92,29 @@ const Upload = () => {
           />
           <div className="mb-4">
             {loading ? (
-              <p>Đang tạo...</p>
+              <p>Đang xử lý...</p>
             ) : (
-              <button
-                type="submit"
-                className="bg-blue-500 text-white py-2 px-4 mt-6 rounded hover:bg-blue-700 transition"
-              >
-                Tạo câu hỏi
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => handleSubmit(e, "createQuiz")}
+                  className="bg-blue-500 text-white py-2 px-4 mt-6 mr-2 rounded hover:bg-blue-700 transition"
+                >
+                  Tạo câu hỏi
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => handleSubmit(e, "chatWithBot")}
+                  className="bg-green-500 text-white py-2 px-4 mt-6 rounded hover:bg-green-700 transition"
+                >
+                  Lưu vào ChatPDF
+                </button>
+              </>
             )}
           </div>
         </form>
         {error && <p className="text-red-500">{error}</p>}
-
-        {/* <button
-          onClick={() => (window.location.href = "/home")}
-          className="mt-2 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
-        >
-          Quay lại Home
-        </button> */}
       </div>
-    // </div>
   );
 };
 

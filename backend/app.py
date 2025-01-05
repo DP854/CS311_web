@@ -293,33 +293,13 @@ async def upload_pdf(file: UploadFile):
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
 
-    # Tải và xử lý nội dung PDF
-    processed_documents = process_and_translate(file_location)
-
-    text = "\n".join([doc for doc in processed_documents])
-
-    # Chia nội dung thành các đoạn nhỏ (chunk)
-    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
-    
-    for i, chunk in enumerate(chunks):
-        embedding = embedding_model.encode(chunk).tolist()
-        
-        # Chuyển đổi filename sang ASCII
-        ascii_filename = convert_to_ascii(file.filename)
-        
-        # Tạo vector ID
-        vector_id = f"{ascii_filename}_{i}"
-        
-        # Lưu vector vào Pinecone
-        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
-    
     return {"filename": file.filename, "file_location": file_location}
 
 def convert_to_ascii(input_string):
     return unicodedata.normalize('NFKD', input_string).encode('ascii', 'ignore').decode('utf-8')
 
-@app.post("/process-pdf")
-async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
+@app.post("/process-pdf-to-quiz")
+async def process_pdf_to_quiz(file: UploadFile, current_user=Depends(get_current_user)):
     # Tìm người dùng hiện tại
     user = users_collection.find_one({"username": current_user["username"]})
     if not user:
@@ -339,6 +319,45 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     csv_filename = os.path.basename(csv_file)
 
     return {"csvFilename": csv_filename}
+
+@app.post("/process-pdf-to-chat")
+async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current_user)):
+    # Tìm người dùng hiện tại
+    user = users_collection.find_one({"username": current_user["username"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
+    
+    upload_folder = "static"
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    file_location = os.path.join(upload_folder, file.filename)
+
+    # Lưu file PDF
+    with open(file_location, "wb") as buffer:
+        buffer.write(await file.read())
+    
+    # Tải và xử lý nội dung PDF
+    processed_documents = await process_and_translate(file_location)
+
+    text = "\n".join([doc for doc in processed_documents])
+    print(0)
+
+    # Chia nội dung thành các đoạn nhỏ (chunk)
+    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    
+    for i, chunk in enumerate(chunks):
+        embedding = embedding_model.encode(chunk).tolist()
+        
+        # Chuyển đổi filename sang ASCII
+        ascii_filename = convert_to_ascii(file.filename)
+        
+        # Tạo vector ID
+        vector_id = f"{ascii_filename}_{i}"
+        
+        # Lưu vector vào Pinecone
+        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
+    
 
 @app.post("/chat")
 async def chat_with_pdf(request: ChatRequest):
