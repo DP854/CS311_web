@@ -3,6 +3,8 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import json 
+from google.protobuf.timestamp_pb2 import Timestamp
+from proto.datetime_helpers import DatetimeWithNanoseconds
 
 # Load API key from .env file 
 load_dotenv()
@@ -78,6 +80,24 @@ def generate_question_from_chunks(text):
             return quiz_json
     except Exception as e:
         return str(e)
+
+def get_gemini_pdf_path(file_path):
+    return genai.upload_file(file_path)
+
+def reply_to_conversation(user_prompt,old_history,local_pdf_path):
+    #trích xuất thời gian file pdf tồn tại trên gemini
+    expiration_time=str(old_history[0]['parts'][1].expiration_time)
+    expiration_time=str(expiration_time)
+    current_time=str(DatetimeWithNanoseconds.now())
+    #kiểm tra xem hết hạn chưa
+    if(current_time>expiration_time):
+        print("holy shit it fucking expired")
+        old_history[0]['parts'][1]=genai.upload_file(local_pdf_path)
+    
+    chat=model.start_chat(history=old_history)
+    response=chat.send_message(user_prompt)
+    old_history.append({"role":"model","parts":response.text})
+    return {"response":response.text,"history":old_history}
 
 # Export the function for use in app.py
 __all__ = ["generate_question_from_chunks, model"]
