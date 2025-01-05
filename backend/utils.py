@@ -27,6 +27,19 @@ pinecone_index = pc.Index(index_name)
 # Embedding model
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
+def clean_text(text):
+    # Loại bỏ các ký tự không mong muốn, như chuỗi '.' dài
+    text = re.sub(r'[\.\-\_]{2,}', '', text)
+    
+    # Loại bỏ các ký tự không phải chữ cái, số, hoặc ký tự cơ bản
+    text = re.sub(r'[^a-zA-Z0-9\s,.!?\'"()%-]', '', text)
+    
+    # Thay nhiều khoảng trắng liên tiếp bằng một khoảng trắng
+    text = re.sub(r'\s{2,}', ' ', text)
+    
+    # Loại bỏ khoảng trắng đầu và cuối
+    return text.strip()
+
 # Băm password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

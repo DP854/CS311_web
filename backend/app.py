@@ -6,11 +6,12 @@ from pydantic import BaseModel
 from bson import ObjectId
 from typing import List, Optional
 import os
-from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate
+from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate, clean_text
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader
 from src.QAGenerator import model
 import unicodedata
+import re
 
 app = FastAPI()
 
@@ -341,7 +342,8 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
     processed_documents = await process_and_translate(file_location)
 
     text = "\n".join([doc for doc in processed_documents])
-    print(0)
+    
+    text = clean_text(text)
 
     # Chia nội dung thành các đoạn nhỏ (chunk)
     chunks = [text[i:i+500] for i in range(0, len(text), 500)]
@@ -364,14 +366,14 @@ async def chat_with_pdf(request: ChatRequest):
     try:
         query = request.query
         query_embedding = embedding_model.encode(query).tolist()
-        
+
         search_results = pinecone_index.query(
-            namespace="pdf-chatbot",
+            namespace="",
             vector=query_embedding, 
             top_k=3, 
             include_metadata=True
             )
-
+        
         context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
         prompt = (
                     f"Context:\n{context}\n\n"

@@ -3,6 +3,8 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import json 
+from google.protobuf.timestamp_pb2 import Timestamp
+from proto.datetime_helpers import DatetimeWithNanoseconds
 
 # Load API key from .env file 
 load_dotenv()
