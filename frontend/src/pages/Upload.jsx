@@ -53,7 +53,7 @@ const Upload = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-200">
+    // <div className="flex justify-center items-center  bg-blue-200">
       <div className="text-center w-full max-w-lg bg-white p-8 rounded-xl">
         <h1 className="text-3xl font-bold mb-4">Tải lên PDF và tạo câu hỏi</h1>
 
@@ -93,14 +93,14 @@ const Upload = () => {
         </form>
         {error && <p className="text-red-500">{error}</p>}
 
-        <button
+        {/* <button
           onClick={() => (window.location.href = "/home")}
           className="mt-2 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition"
         >
           Quay lại Home
-        </button>
+        </button> */}
       </div>
-    </div>
+    // </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import Upload from "./Upload";
 
 const Home = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -113,13 +114,14 @@ const Home = () => {
             Thêm Quiz
           </Link>
           <div className="bg-white text-black p-6 rounded-lg shadow hover:bg-gray-200 transition w-full text-center">
-            <h3 className="text-lg font-semibold">Tải lên PDF</h3>
-            <p>Chọn để tải lên PDF và tạo câu hỏi.</p>
+            {/* <h3 className="text-lg font-semibold">Tải lên PDF</h3>
+            <p>Chọn để tải lên PDF và tạo câu hỏi.</p> 
             <Link to="/upload">
               <button className="mt-4 bg-blue-400 text-white py-2 px-4 rounded-lg hover:bg-blue-600 active:bg-opacity-65 transition">
                 Tải lên
               </button>
-            </Link>
+            </Link> */}
+            <Upload />
           </div>
         </div>
       </div>

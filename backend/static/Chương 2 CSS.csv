@@ -1,47 +1,49 @@
 Question,Answer
-CSS stands for Cascading Style Sheets.,True
-"CSS is only used to style entire websites, not individual pages.",False
+CSS can only be used to style a single web page.,False
+CSS uses a template-like format for styling web pages.,True
 Inline styles have a higher priority than embedded styles.,True
+Comments in CSS are denoted using //.,False
 External stylesheets are typically saved with a .css extension.,True
-The `@import` directive is used with external stylesheets.,True
-Comments in CSS are denoted by `//` and `//`.,False
-Which of the following is NOT a type of CSS stylesheet?,3
-What is the correct syntax for an external stylesheet link using the `<link>` tag?,0
-What does the selector `#id1` target?,1
-"In order of descending priority, what is the correct order of CSS stylesheet application?",1
-The style for `#id1` and `#id2` are defined using class selectors.,False
-The `maunen` class applies a red background color.,True
-The `::first-line` pseudo-element can style the first line of text.,True
-The `::before` pseudo-element adds content after the selected element.,False
+The `<link>` tag is used to link to an external stylesheet.,True
+The `@import` directive is used within the `<style>` tag to link external style sheets.,True
+Which of the following is NOT a way to include CSS in an HTML document?,3
+What does CSS stand for?,0
+"In the CSS syntax `selector { attribute: value; }`, what does the 'selector' represent?",1
+Which type of CSS stylesheet has the lowest priority?,3
+What is the correct syntax to select all elements with the class 'myClass'?,1
+How would you apply a red color to a paragraph element using inline styles?,0
+The style for the element with id 'id1' sets its color to blue.,False
+The class 'maunen' applies a red background color.,True
+The `p.giua` class aligns text to the right.,False
+Pseudo-elements are used to style parts of selected elements.,True
+The `::first-line` pseudo-element selects the first character of a text element.,False
+"The `::before` pseudo-element adds content before an element, while `::after` adds it after.",True
 The `::selection` pseudo-element styles text selected by the user.,True
-Pseudo-classes are used to style elements based on their state.,True
+"Pseudo-classes style elements based on their special states (e.g., hover, visited).",True
 The `a:hover` style should be defined before `a:link` and `a:visited`.,False
-The `:first-child` pseudo-class styles only the first element in the entire document.,False
-The CSS background extends beyond the border of an element.,False
-Which of the following is NOT a valid `background-repeat` value?,3
-What pseudo-element is used to style the first letter of an element?,1
-Which pseudo-class styles a link when the mouse hovers over it?,2
-What property controls the repetition of a background image?,2
-Which of the following selectors targets the first `<p>` tag within another `<p>` tag?,0
-"The `border` attribute can accept only one value for width, style, and color.",False
-The `margin` property allows for setting margins on all four sides of an element.,True
-Padding is the space between the content and the margin of an element.,False
-The `position: fixed` attribute makes an element's position relative to its parent element.,False
-The `overflow` property is used to control what happens when content overflows its container.,True
-"Generic fonts include font types like ""Times New Roman"" and ""Arial"".",False
-Which of the following is NOT a valid value for the `border-style` attribute?,3
-What does the `margin: auto` property do for the left and right margins?,2
-"When using multiple values for the `padding` property, what do the first and second values represent?",2
-Which CSS positioning value makes an element positioned relative to its nearest positioned ancestor?,2
-Which of the following is NOT a generic font category?,3
-What CSS property controls the space between lines of text?,1
-The font size and family attributes are optional in a font line.,False
-Multiple font properties can be combined onto a single line.,True
-The `line-height` attribute must always be present in a font declaration.,False
-"If used, the `line-height` attribute must appear before the `size` attribute.",False
-"The order of the `style`, `variant`, and `weight` attributes is fixed.",False
-Which of the following is NOT a valid text-align value?,3
+"The `:first-child` pseudo-class styles only the first element of a specific type (e.g., the first <p> tag).",False
+"In the provided text, what color is applied to the element with the ID 'id2'?",1
+Which CSS property is used to set the background color of an element?,2
+Which pseudo-element is used to style the first letter of a paragraph?,2
+What pseudo-class is used to style a link when the mouse cursor is over it?,3
+Which of the following is NOT a valid background-repeat value?,3
+"The `border` attribute can accept only one value for setting border width, style, and color.",False
+The `margin` property allows for spacing between the content and its border.,False
+Padding is the space between the content and the border.,True
+"The `position: static;` declaration makes an element unaffected by `top`, `right`, `bottom`, and `left` properties.",True
+The `overflow` property only allows for `visible` or `hidden` values.,False
+"A generic font family is defined by specific font names like ""Times New Roman"".",False
+Which property is used to define the spacing between the content and its border?,2
+What value of the `position` property will make an element's position relative to its parent?,2
+"In the context of border styles, what does `double` represent?",2
+Which of the following is NOT a generic font family?,2
+The `font` property allows only one font attribute at a time.,False
+The `size` and `family` attributes are optional in the `font` property.,False
+"If `line-height` is used, it must follow the `size` attribute immediately.",True
+"The order of `style`, `variant`, and `weight` in the `font` property is fixed.",False
+The `text-align` property can accept the value 'justified'.,True
+Which of the following is NOT a valid value for `text-decoration`?,3
 What property controls the spacing between lines of text?,2
-Which property is used to control the spacing between characters?,1
-Which text-transform value converts all text to uppercase?,2
-Which property allows you to control the direction of text (left-to-right or right-to-left)?,1
+Which property is used to control the direction of text?,1
+The `vertical-align` property can accept a percentage value.,True
+The `white-space` property allows which of the following values?,0

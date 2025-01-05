@@ -10,6 +10,7 @@ from utils import users_collection, hash_password, verify_password, create_jwt, 
 
 from langchain_community.document_loaders import PyPDFLoader
 from src.QAGenerator import model
+import unicodedata
 
 app = FastAPI()
 
@@ -294,6 +295,9 @@ async def upload_pdf(file: UploadFile):
     
     return {"filename": file.filename, "file_location": file_location}
 
+def convert_to_ascii(input_string):
+    return unicodedata.normalize('NFKD', input_string).encode('ascii', 'ignore').decode('utf-8')
+
 @app.post("/process-pdf")
 async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     # Tìm người dùng hiện tại
@@ -307,23 +311,33 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
 
     file_location = os.path.join(upload_folder, file.filename)
 
+    # Lưu file PDF
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
     
     csv_file = await get_csv(file_location, user)
     csv_filename = os.path.basename(csv_file)
 
-        # Lưu PDF vào pinecone
+    # Tải và xử lý nội dung PDF
     loader = PyPDFLoader(file_location)
     documents = loader.load()
 
     text = "\n".join([doc.page_content for doc in documents])
 
+    # Chia nội dung thành các đoạn nhỏ (chunk)
     chunks = [text[i:i+500] for i in range(0, len(text), 500)]
     
     for i, chunk in enumerate(chunks):
         embedding = embedding_model.encode(chunk).tolist()
-        pinecone_index.upsert([(f"{file.filename}_{i}", embedding, {"metadata": chunk})])
+        
+        # Chuyển đổi filename sang ASCII
+        ascii_filename = convert_to_ascii(file.filename)
+        
+        # Tạo vector ID
+        vector_id = f"{ascii_filename}_{i}"
+        
+        # Lưu vector vào Pinecone
+        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
 
     return {"csvFilename": csv_filename}
 
