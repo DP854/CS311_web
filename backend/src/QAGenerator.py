@@ -86,6 +86,35 @@ def get_gemini_pdf_path(file_path):
 
 def reply_to_conversation(user_prompt,old_history,local_pdf_path):
     #trích xuất thời gian file pdf tồn tại trên gemini
+    """
+    old_history là 1 mảng có cấu trúc như sau:
+    [
+        {"role":"user","parts":[
+            "Imagine you are an expert teacher, try to focus only on this PDF content and ignore everything else, answer my questions.",
+            genai.upload_file(path file pdf trong static)
+            ]
+        },
+        {"role":"user","parts":"câu hỏi blah blah blah"},
+        {"role":"model","parts":"câu trả lời của model"},
+        ...
+    ]
+
+    genai.upload_file là 1 object có cấu trúc như sau:
+    {
+        "name": string,
+        "displayName": string,
+        "mimeType": string,
+        "sizeBytes": string,
+        "createTime": string,
+        "updateTime": string,
+        "expirationTime": string,
+        "sha256Hash": string,
+        "uri": string,
+        "state": enum (State),
+        "error": {
+            object (Status)
+    }
+    """
     expiration_time=str(old_history[0]['parts'][1].expiration_time)
     expiration_time=str(expiration_time)
     current_time=str(DatetimeWithNanoseconds.now())
