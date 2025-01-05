@@ -292,6 +292,26 @@ async def upload_pdf(file: UploadFile):
 
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
+
+    # Tải và xử lý nội dung PDF
+    processed_documents = process_and_translate(file_location)
+
+    text = "\n".join([doc for doc in processed_documents])
+
+    # Chia nội dung thành các đoạn nhỏ (chunk)
+    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    
+    for i, chunk in enumerate(chunks):
+        embedding = embedding_model.encode(chunk).tolist()
+        
+        # Chuyển đổi filename sang ASCII
+        ascii_filename = convert_to_ascii(file.filename)
+        
+        # Tạo vector ID
+        vector_id = f"{ascii_filename}_{i}"
+        
+        # Lưu vector vào Pinecone
+        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
     
     return {"filename": file.filename, "file_location": file_location}
 
@@ -317,29 +337,6 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     
     csv_file = await get_csv(file_location, user)
     csv_filename = os.path.basename(csv_file)
-
-    # # Tải và xử lý nội dung PDF
-    # loader = PyPDFLoader(file_location)
-    # documents = loader.load()
-    
-    processed_documents = process_and_translate(file_location)
-
-    text = "\n".join([doc for doc in processed_documents])
-
-    # Chia nội dung thành các đoạn nhỏ (chunk)
-    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
-    
-    for i, chunk in enumerate(chunks):
-        embedding = embedding_model.encode(chunk).tolist()
-        
-        # Chuyển đổi filename sang ASCII
-        ascii_filename = convert_to_ascii(file.filename)
-        
-        # Tạo vector ID
-        vector_id = f"{ascii_filename}_{i}"
-        
-        # Lưu vector vào Pinecone
-        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
 
     return {"csvFilename": csv_filename}
 
