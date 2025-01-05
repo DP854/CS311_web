@@ -126,6 +126,10 @@ async def translate_documents(documents):
     
     return translated_documents
 
+async def process_and_translate(file_path):
+    document_ques_gen = file_processing(file_path) 
+    translated_documents = await translate_documents(document_ques_gen)
+    return translated_documents
 
 async def llm_pipeline(file_path):
     document_ques_gen = file_processing(file_path) 

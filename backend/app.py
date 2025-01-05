@@ -6,8 +6,8 @@ from pydantic import BaseModel
 from bson import ObjectId
 from typing import List, Optional
 import os
-from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index
-
+from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate
+from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader
 from src.QAGenerator import model
 import unicodedata
@@ -318,11 +318,13 @@ async def process_pdf(file: UploadFile, current_user=Depends(get_current_user)):
     csv_file = await get_csv(file_location, user)
     csv_filename = os.path.basename(csv_file)
 
-    # Tải và xử lý nội dung PDF
-    loader = PyPDFLoader(file_location)
-    documents = loader.load()
+    # # Tải và xử lý nội dung PDF
+    # loader = PyPDFLoader(file_location)
+    # documents = loader.load()
+    
+    processed_documents = process_and_translate(file_location)
 
-    text = "\n".join([doc.page_content for doc in documents])
+    text = "\n".join([doc for doc in processed_documents])
 
     # Chia nội dung thành các đoạn nhỏ (chunk)
     chunks = [text[i:i+500] for i in range(0, len(text), 500)]
@@ -346,15 +348,40 @@ async def chat_with_pdf(request: ChatRequest):
     try:
         query = request.query
         query_embedding = embedding_model.encode(query).tolist()
+        
         search_results = pinecone_index.query(
             namespace="pdf-chatbot",
             vector=query_embedding, 
             top_k=3, 
-            include_metadata=True)
+            include_metadata=True
+            )
 
         context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
-        prompt = f"Context:\n{context}\n\nQuery:\n{query}\n\nResponse:\n"
-        response = model.generate_content(prompt).candidates[0].content.parts[0].text
-        return { "response": response }
+        prompt = (
+                    f"Context:\n{context}\n\n"
+                    f"User Query:\n{query}\n\n"
+                    f"Instructions:\n"
+                    f"1. Provide a clear and concise response to the user's query based on the provided context.\n"
+                    f"2. Ensure the response is formatted for display in a report, not includes any specific character like (**) and adhering to literature-friendly syntax.\n"
+                    f"3. If additional information is required or the query cannot be answered fully, provide a helpful and polite clarification to the user \n\n"
+                    f"Example format:\n"
+                    f"Respond by saying that the answer to the question has been found, and smoothly lead into the answer\n"
+                    f"1. Any subtitle\n"
+                    f"2. Next subtitle\n"
+                    f"3. ....\n"
+                    f"Consume and condition!\n"
+                    f"Additionally, offer related follow-up questions to guide the user further. \n\n"
+                    f"Response:\n"
+        )
+        question_prompt = PromptTemplate(
+                        template=prompt,
+                        input_variables=["context", "query"]
+        )
+        formatted_prompt = question_prompt.format(context=context, query=query)
+        response = model.generate_content(formatted_prompt).candidates[0].content.parts[0].text
+        return { 
+            "response": response,
+            "search_results": search_results["matches"] if search_results.get("matches") else "Không có dữ liệu từ search"
+        }
     except Exception as e:
         return { "error": str(e) }

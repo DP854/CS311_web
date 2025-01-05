@@ -1,49 +1,52 @@
 Question,Answer
-CSS can only be used to style a single web page.,False
-CSS uses a template-like format for styling web pages.,True
-Inline styles have a higher priority than embedded styles.,True
-Comments in CSS are denoted using //.,False
-External stylesheets are typically saved with a .css extension.,True
-The `<link>` tag is used to link to an external stylesheet.,True
-The `@import` directive is used within the `<style>` tag to link external style sheets.,True
-Which of the following is NOT a way to include CSS in an HTML document?,3
-What does CSS stand for?,0
-"In the CSS syntax `selector { attribute: value; }`, what does the 'selector' represent?",1
-Which type of CSS stylesheet has the lowest priority?,3
-What is the correct syntax to select all elements with the class 'myClass'?,1
-How would you apply a red color to a paragraph element using inline styles?,0
-The style for the element with id 'id1' sets its color to blue.,False
-The class 'maunen' applies a red background color.,True
-The `p.giua` class aligns text to the right.,False
-Pseudo-elements are used to style parts of selected elements.,True
-The `::first-line` pseudo-element selects the first character of a text element.,False
-"The `::before` pseudo-element adds content before an element, while `::after` adds it after.",True
-The `::selection` pseudo-element styles text selected by the user.,True
-"Pseudo-classes style elements based on their special states (e.g., hover, visited).",True
-The `a:hover` style should be defined before `a:link` and `a:visited`.,False
-"The `:first-child` pseudo-class styles only the first element of a specific type (e.g., the first <p> tag).",False
-"In the provided text, what color is applied to the element with the ID 'id2'?",1
-Which CSS property is used to set the background color of an element?,2
-Which pseudo-element is used to style the first letter of a paragraph?,2
-What pseudo-class is used to style a link when the mouse cursor is over it?,3
-Which of the following is NOT a valid background-repeat value?,3
-"The `border` attribute can accept only one value for setting border width, style, and color.",False
-The `margin` property allows for spacing between the content and its border.,False
-Padding is the space between the content and the border.,True
-"The `position: static;` declaration makes an element unaffected by `top`, `right`, `bottom`, and `left` properties.",True
-The `overflow` property only allows for `visible` or `hidden` values.,False
-"A generic font family is defined by specific font names like ""Times New Roman"".",False
-Which property is used to define the spacing between the content and its border?,2
-What value of the `position` property will make an element's position relative to its parent?,2
-"In the context of border styles, what does `double` represent?",2
-Which of the following is NOT a generic font family?,2
-The `font` property allows only one font attribute at a time.,False
-The `size` and `family` attributes are optional in the `font` property.,False
-"If `line-height` is used, it must follow the `size` attribute immediately.",True
-"The order of `style`, `variant`, and `weight` in the `font` property is fixed.",False
-The `text-align` property can accept the value 'justified'.,True
-Which of the following is NOT a valid value for `text-decoration`?,3
-What property controls the spacing between lines of text?,2
-Which property is used to control the direction of text?,1
-The `vertical-align` property can accept a percentage value.,True
-The `white-space` property allows which of the following values?,0
+CSS stands for Cascading Style Sheets.,True
+CSS is primarily used for structuring the content of a web page.,False
+"CSS styles can only be applied to the entire website, not individual pages.",False
+Inline styles have higher priority than embedded styles.,True
+Comments in CSS are denoted using '//'.,False
+External style sheets are typically saved with the extension .css.,True
+The `<link>` tag is used to link external CSS files.,True
+The `@import` rule can be used within a `<style>` tag to import an external style sheet.,True
+Which of the following is NOT a type of CSS style sheet?,2
+What is the correct syntax for an inline style within an HTML tag?,3
+Where is an embedded style sheet placed within an HTML document?,1
+Which CSS selector targets elements with a specific ID?,1
+Which of the following correctly describes the order of priority for CSS styles (highest to lowest)?,1
+What does the CSS selector `.class` target?,0
+The style element in the first HTML example applies styles using IDs.,True
+The second HTML example uses classes to style elements.,True
+The third HTML example demonstrates text alignment using inline styles.,False
+"Pseudo-elements are used to style parts of an element, not the entire element.",True
+The `::first-line` pseudo-element selects the first character of a text.,False
+The `::before` pseudo-element adds content after an element.,False
+The `::selection` pseudo-element styles the text highlighted by the user.,True
+Pseudo-classes are used to style elements based on their special states.,True
+The `a:hover` style should be defined before `a:link` in CSS.,False
+The `:first-child` pseudo-class styles the first element of any type within its parent.,True
+The background property in CSS can only set the background color.,False
+"In the first HTML example, what color is the text with the ID 'id1'?",1
+What CSS property is used to control text alignment in the third HTML example?,1
+Which pseudo-element is used to style the first letter of text?,2
+Which pseudo-class is used to style a link when the mouse hovers over it?,3
+What CSS property controls the repetition of background images?,2
+Which of the following is NOT a valid value for the `background-repeat` property?,3
+"In the example `p i:first-child { color: blue; }`, what will be the color of the first <i> tag inside a <p> tag?",1
+"The `border` attribute can accept only one value for width, style, and color.",False
+The `margin` property allows space between content and border.,False
+Padding is the space between the content and its border.,True
+"The `position: static;` declaration makes elements unresponsive to `top`, `right`, `bottom`, and `left` properties.",True
+The `overflow` property is used to control how content exceeding element boundaries is handled.,True
+Generic fonts include specific font names like Times New Roman.,False
+Which CSS property controls the space between the content and its border?,2
+What is the correct syntax to set a 10px margin on all sides of an element?,0
+Which positioning value makes an element positioned relative to its nearest positioned ancestor?,2
+Which of the following is NOT a generic font family?,3
+Which CSS property is used to define the stacking order of elements?,2
+Setting `font-size` to `larger` will:,1
+The 'size' and 'family' attributes are optional in font properties.,False
+Line height must be placed immediately after the size attribute if used.,True
+"The order of 'style', 'variant', and 'weight' attributes is fixed.",False
+Which text property controls the spacing between words?,1
+Which of the following is NOT a valid value for 'text-align'?,3
+What does the 'text-transform' property control?,2
+Which property controls the direction of text?,2
