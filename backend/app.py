@@ -385,7 +385,7 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
         embedding = embedding_model.encode(chunk).tolist()
         
         # Tạo vector ID
-        vector_id = f"{ascii_filename}_{i}"
+        vector_id = f"{user["username"]}_{ascii_filename}_{i}"
         
         # Lưu vector vào Pinecone
         pinecone_index.upsert(
