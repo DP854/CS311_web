@@ -238,22 +238,22 @@ async def attempt_quiz(quiz_name: str, answers: List[str], current_user=Depends(
     if not quiz:
         raise HTTPException(status_code=404, detail="Không tìm thấy quiz")
 
-    # Kiểm tra nếu câu trả lời là "True" hoặc "False", chuyển nó thành boolean
-    processed_answers = []
-    for ans in answers:
-        if ans == "True":
-            processed_answers.append(True)
-        elif ans == "False":
-            processed_answers.append(False)
-        else:
-            try:
-                processed_answers.append(int(ans))  # Chuyển đổi chỉ mục thành số nguyên
-            except ValueError:
-                processed_answers.append(ans)  # Nếu không phải "True", "False" hay số, giữ nguyên
+    # # Kiểm tra nếu câu trả lời là "True" hoặc "False", chuyển nó thành boolean
+    # processed_answers = []
+    # for ans in answers:
+    #     if ans == "True":
+    #         processed_answers.append(True)
+    #     elif ans == "False":
+    #         processed_answers.append(False)
+    #     else:
+    #         try:
+    #             processed_answers.append(int(ans))  # Chuyển đổi chỉ mục thành số nguyên
+    #         except ValueError:
+    #             processed_answers.append(ans)  # Nếu không phải "True", "False" hay số, giữ nguyên
     
     # Tính điểm
     correct_answers = [q["answer"] for q in quiz["questions"]]
-    score = sum(1 for i, ans in enumerate(processed_answers) if ans == correct_answers[i])
+    score = sum(1 for i, ans in enumerate(answers) if ans == correct_answers[i])
 
     # Lưu kết quả làm quiz
     attempt = {
@@ -312,6 +312,10 @@ async def process_pdf_to_quiz(file: UploadFile, current_user=Depends(get_current
 
     file_location = os.path.join(upload_folder, file.filename)
 
+    # Kiểm tra nếu tệp đã tồn tại, xóa nó đi trước khi lưu tệp mới
+    if os.path.exists(file_location):
+        os.remove(file_location)
+    
     # Lưu file PDF
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())

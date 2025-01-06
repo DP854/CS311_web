@@ -1,0 +1,106 @@
+Question,Answer
+The NVIDIA Technology Access Terms of Use are a contract between the user and NVIDIA Corporation.,True
+Acceptance of the TOU requires only a signature.,False
+NVIDIA can change the Technology without prior notice.,True
+NVIDIA guarantees permanent access to the Technology and associated data.,False
+Users are permitted to reverse engineer the Technology.,False
+The TOU includes a binding arbitration clause.,True
+"Who is the contract between, according to the document?",1
+What must a user do to accept the TOU?,1
+What right does NVIDIA reserve regarding the Technology?,1
+"According to the document, what is prohibited regarding the Technology?",3
+You are allowed to copy and reproduce NVIDIA content from user forums and share it elsewhere.,False
+Modifying the Technology is permitted without explicit authorization in a Product Agreement.,False
+Using the Technology in life-critical applications is strictly prohibited.,False
+"You can use the Technology in any manner that would make it subject to an open-source license, regardless of its components.",False
+Circumventing the Technology's security mechanisms is acceptable.,False
+Using NVIDIA servers for cryptocurrency mining is permitted.,False
+Distributing malware is against the terms of use.,True
+Sending unsolicited bulk emails is allowed.,False
+Using NVIDIA servers for general cloud storage is permitted.,False
+Security testing of NVIDIA servers is allowed without written permission.,False
+Which of the following actions is explicitly prohibited regarding the Technology?,2
+What is NOT considered a responsibility of the user regarding User Content?,3
+"When you provide User Content, which license do you grant NVIDIA?",1
+"For publicly viewable User Content, what kind of license is granted?",2
+What does NVIDIA's liability exclude in case of Critical Application use?,0
+"For publicly viewable User Content, users grant a limited license to others.",False
+NVIDIA is responsible for the use of User Content by third parties granted private access.,False
+User Content may include confidential information if explicitly permitted.,True
+User Content can contain mass mailings or spam.,False
+NVIDIA is obligated to monitor all User Content transmitted through its servers.,False
+Users are responsible for ensuring they have the necessary rights to share User Content.,True
+NVIDIA guarantees that all User Content will be compatible with all NVIDIA Services.,False
+Publicly viewable User Content can never be modified by others.,False
+What type of license is granted for publicly viewable User Content?,1
+Which of the following is NOT a limitation on User Content?,3
+What is NVIDIA's responsibility regarding User Content?,2
+What happens when a user submits User Content that does not conform to the limitations?,2
+Where can a user find information regarding NVIDIA's trademark policies?,1
+NVIDIA endorses all User Content available on its platforms.,False
+Users can always remove their User Content from publicly viewable areas.,False
+NVIDIA assumes responsibility for the security of data on trial platforms once handed over to the user.,False
+Pre-Release Offerings are guaranteed to be fully functional and without errors.,False
+NVIDIA is obligated to compensate users for Feedback provided.,False
+What is NVIDIA's stance on User Content?,2
+What happens after a promotional offering ends?,1
+What is the recommended course of action regarding data when using Pre-Release Offerings?,2
+How does NVIDIA handle Feedback from users?,2
+What is the intended use of Pre-Release Offerings?,2
+NVIDIA guarantees that it will not develop products competing with yours.,False
+NVIDIA Confidential Information includes publicly available information.,False
+Confidentiality obligations end upon termination of the TOU.,False
+NVIDIA warrants that its technology is absolutely reliable and secure.,False
+NVIDIA's liability is unlimited.,False
+"What does ""NVIDIA Confidential Information"" encompass?",1
+Under what conditions can you disclose NVIDIA Confidential Information to third parties?,3
+What is the maximum extent of NVIDIA’s total cumulative aggregate liability for any claims arising out of the TOU?,2
+Which warranty does NVIDIA explicitly disclaim regarding the technology?,2
+"According to the passage, what is NVIDIA's commitment regarding AI?",1
+Claims related to the Terms of Use (TOU) will exceed US$50.,False
+NVIDIA may collect user data to improve its products and services.,True
+NVIDIA is responsible for the privacy practices of third-party websites linked within the Technology.,False
+"NVIDIA guarantees the Technology is suitable for processing all types of data, including sensitive information.",False
+"Upon termination, NVIDIA is obligated to retain all content associated with the affected Technology.",False
+Sections of the TOU concerning liability and data privacy survive termination of the agreement.,True
+Links to third-party websites imply endorsement by NVIDIA.,False
+"NVIDIA assumes responsibility for third-party websites, products, and services accessed through the Technology.",False
+What is the maximum amount for claims arising from the TOU?,1
+"Besides registration information, what kind of data might NVIDIA collect?",2
+Where can users find NVIDIA's policy on data collection and usage?,1
+"If NVIDIA terminates access to the Technology, what is the user required to do?",2
+Users are responsible for acquiring their own licenses for the Technology.,True
+The Technology is entirely free from third-party components.,False
+"In case of conflict, third-party open-source licenses always take precedence.",False
+Disputes must be resolved through binding arbitration before pursuing court action.,True
+Users can always opt for a jury trial in case of disputes.,False
+"If informal dispute resolution fails, the next step is directly filing a lawsuit.",False
+The governing law and dispute resolution are detailed in section 18.,True
+"In case of conflict between the TOU and a third-party open-source license, which will govern?",2
+Where should users initially contact NVIDIA in case of a dispute?,2
+"What is the primary method of dispute resolution stated in the passage, excluding small claims court?",2
+What is the timeframe for opting out of the jury trial and class action waiver?,1
+Where will arbitration be conducted if not in the user's hometown?,1
+"To opt out of arbitration, notification must be sent within 30 days of any TOU change.",True
+An opt-out notification is valid if it omits the sender's address.,False
+Opting out of dispute resolution affects the other terms of the TOU.,False
+Disputes are governed by Delaware state law and the Federal Arbitration Act.,True
+"In case of discrepancies, the non-English version of the TOU prevails.",False
+"If NVIDIA needs to contact you, they can do so by mail or email only.",True
+"According to the TOU, what is the mailing address for legal notices to NVIDIA?",3
+Which international agreement is explicitly disclaimed in the TOU?,2
+Under what circumstances will the previous version of the “Governing Law; Dispute Resolution” section apply?,0
+Where should a copyright infringement notification under the DMCA be sent?,1
+The TOU can be modified orally by an authorized representative of each party.,False
+NVIDIA can assign its rights or obligations under the TOU without restriction.,True
+Users can assign their rights or obligations under the TOU without NVIDIA's prior written consent.,False
+Forward-looking statements in the Site's information are guaranteed to be accurate.,False
+NVIDIA is obligated to update its forward-looking statements.,False
+The TOU and Product Agreements constitute the complete agreement between the parties.,True
+Additional terms in purchase orders are binding on NVIDIA.,False
+"If a court deems a TOU provision unenforceable, the entire TOU becomes void.",False
+What constitutes the entire and exclusive agreement between the parties regarding the subject matter of the TOU?,2
+Under what condition may a user assign their rights or obligations under the TOU?,1
+Where would you find information on factors that could affect NVIDIA's future results?,1
+What happens when a user does not agree with the updated TOU?,1
+When do updated terms of use become effective?,2

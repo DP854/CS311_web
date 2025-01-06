@@ -51,7 +51,7 @@ const QuizDetail = () => {
     if (!result || !result.answers) return null;
     const userAnswer = answers[questionIndex];
     const correctAnswer = result.answers[questionIndex];
-    
+
     // Handle boolean answers
     if (typeof correctAnswer === 'boolean') {
       return userAnswer === (correctAnswer ? 'True' : 'False');
@@ -99,13 +99,22 @@ const QuizDetail = () => {
                 {question.options.map((option, idx) => {
                   const isCorrect = submitted && isAnswerCorrect(index);
                   const isSelected = answers[index] === (option === 'True' || option === 'False' ? option : idx.toString());
-                  
+
                   return (
-                    <label 
-                      key={idx} 
+                    <label
+                      key={idx}
+                      // ${submitted  && (
+                      //   isSelected && isCorrect ? 'text-green-600' : (
+                      //     !isSelected && isCorrect ? 'text-green-600' : (
+                      //       isSelected && !isCorrect ? 'text-red-600': 'text-black'
+                      //     )
+                      //   )
+                      // )}
                       className={`block p-2 rounded cursor-pointer transition-colors
                         ${isSelected && submitted ? (isCorrect ? 'text-green-600' : 'text-red-600') : ''}
-                        ${isSelected ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                        ${isSelected ? 'bg-gray-100' : 'hover:bg-gray-100'}
+                        
+                        `}
                     >
                       <input
                         type="radio"
@@ -119,11 +128,21 @@ const QuizDetail = () => {
                     </label>
                   );
                 })}
+                {submitted ? (
+                  <p className="text-white font-semibold shadow-xl bg-green-600 inline-block p-2 rounded-md ">
+                    Correct Answer:&nbsp; 
+                    {result.answers[index] === "True" || result.answers[index] === 'False' ? result.answers[index] : (
+                      question.options[parseInt(result.answers[index])]
+                    )}
+                  </p>
+                ) : (
+                  ''
+                )}
               </div>
             </li>
           ))}
         </ul>
-        
+
         {!submitted ? (
           <button
             onClick={submitQuiz}
@@ -138,9 +157,9 @@ const QuizDetail = () => {
             </p>
           </div>
         )}
-        
-        <Link 
-          to="/home" 
+
+        <Link
+          to="/home"
           className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
         >
           Quay lại
