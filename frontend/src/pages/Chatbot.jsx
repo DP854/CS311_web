@@ -1,10 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReactMarkdown from 'react-markdown';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [pdfList, setPdfList] = useState([]); // Danh sách PDF
+  const [selectedPdf, setSelectedPdf] = useState(null); // PDF được chọn
+  
+  // Fetch danh sách PDF từ API
+  const fetchPdfList = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8000/user-pdfs-chat", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Response data:", response.data); // Kiểm tra dữ liệu trả về
+      setPdfList(response.data.pdfs || []); // Cập nhật danh sách PDF
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách PDF:", error);
+    }
+  };
+
+  // Chạy khi pdfList thay đổi
+  useEffect(() => {
+    console.log("Updated pdfList:", pdfList); // Hiển thị giá trị mới của pdfList
+  }, [pdfList]);
+
+  // Chạy fetchPdfList khi component mount
+  useEffect(() => {
+    fetchPdfList();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -13,7 +41,11 @@ const Chatbot = () => {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await axios.post("http://localhost:8000/chat", { query: input });
+      const token = localStorage.getItem("token");
+      const response = await axios.post("http://localhost:8000/chat", 
+        { query: input, pdf: selectedPdf }, 
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
       const { response: botResponse, search_results } = response.data;
 
@@ -33,7 +65,28 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-t from-blue-100 to-blue-200">
+    <div className="flex flex-col md:flex-row h-screen bg-gradient-to-t from-blue-100 to-blue-200">
+      {/* Sidebar: Danh sách PDF */}
+      <aside className="w-full md:w-1/4 bg-white shadow-lg border-r overflow-y-auto p-4">
+        <h2 className="text-xl font-semibold mb-4">Danh sách PDF</h2>
+        <ul className="space-y-2">
+          {pdfList.map((pdf, index) => (
+            <li
+              key={index}
+              className={`p-2 cursor-pointer rounded-lg transition ${
+                selectedPdf === pdf
+                  ? "bg-blue-500 text-white"
+                  : "hover:bg-blue-100"
+              }`}
+              onClick={() => setSelectedPdf(pdf)}
+            >
+              {pdf}
+            </li>
+          ))}
+        </ul>
+      </aside>
+      {/* Khung Chat */}
+      <main className="flex-grow flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg border border-gray-200">
         <div className="h-96 overflow-y-auto mb-4 p-4 space-y-4">
           {messages.map((message, index) => (
@@ -84,7 +137,10 @@ const Chatbot = () => {
       >
         Quay lại Home
       </button>
+      
+      </main>
     </div>
+    
   );
 };
 

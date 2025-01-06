@@ -6,12 +6,10 @@ from pydantic import BaseModel
 from bson import ObjectId
 from typing import List, Optional
 import os
-from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, get_csv, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate, clean_text
+from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, save_quiz, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate, clean_text
 from langchain.prompts import PromptTemplate
-from langchain_community.document_loaders import PyPDFLoader
 from src.QAGenerator import model
 import unicodedata
-import re
 
 app = FastAPI()
 
@@ -34,6 +32,7 @@ class User(BaseModel):
     password: str
     profile: Optional[dict] = {"email": "", "birthday": "","phone": "", "address": ""}
     quizzes: Optional[List[str]] = []
+    pdfs_chat: Optional[List[str]] = []
 
     class Config:
         json_encoders = {
@@ -62,6 +61,7 @@ class Question(BaseModel):
 
 class ChatRequest(BaseModel):
     query: str
+    pdf: str
 
 def get_current_user(authorization: str = Header(None)):
     if not authorization:
@@ -90,7 +90,8 @@ async def register_user(user: User):
         "username": user.username,
         "password": password_hash,
         "profile": user.profile,
-        "quizzes": []
+        "quizzes": [],
+        "pdfs_chat": []
     })
     return {"message": "Đăng ký thành công"}
 
@@ -284,12 +285,22 @@ async def get_quiz_history(quiz_name: str, current_user=Depends(get_current_user
 
 # API xử lý PDF
 @app.post("/upload")
-async def upload_pdf(file: UploadFile):
+async def upload_pdf(file: UploadFile, current_user=Depends(get_current_user)):
+    # Tìm người dùng hiện tại
+    user = users_collection.find_one({"username": current_user["username"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
+    
     upload_folder = "static"
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+    
+    #if not os.path.exists(upload_folder):
+        #os.makedirs(upload_folder)
+    user_folder = os.path.join(upload_folder, user["username"])
+    
+    # Tạo thư mục gốc và thư mục con nếu chưa tồn tại
+    os.makedirs(user_folder, exist_ok=True)
 
-    file_location = os.path.join(upload_folder, file.filename)
+    file_location = os.path.join(user_folder, file.filename)
 
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
@@ -307,10 +318,14 @@ async def process_pdf_to_quiz(file: UploadFile, current_user=Depends(get_current
         raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
     
     upload_folder = "static"
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+    #if not os.path.exists(upload_folder):
+        #os.makedirs(upload_folder)
+    user_folder = os.path.join(upload_folder, user["username"])
+    
+    # Tạo thư mục gốc và thư mục con nếu chưa tồn tại
+    os.makedirs(user_folder, exist_ok=True)
 
-    file_location = os.path.join(upload_folder, file.filename)
+    file_location = os.path.join(user_folder, file.filename)
 
     # Kiểm tra nếu tệp đã tồn tại, xóa nó đi trước khi lưu tệp mới
     if os.path.exists(file_location):
@@ -320,7 +335,7 @@ async def process_pdf_to_quiz(file: UploadFile, current_user=Depends(get_current
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
     
-    csv_file = await get_csv(file_location, user)
+    csv_file = await save_quiz(file_location, user)
     csv_filename = os.path.basename(csv_file)
 
     return {"csvFilename": csv_filename}
@@ -333,10 +348,14 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
         raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
     
     upload_folder = "static"
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+    #if not os.path.exists(upload_folder):
+        #os.makedirs(upload_folder)
+    user_folder = os.path.join(upload_folder, user["username"])
+    
+    # Tạo thư mục gốc và thư mục con nếu chưa tồn tại
+    os.makedirs(user_folder, exist_ok=True)
 
-    file_location = os.path.join(upload_folder, file.filename)
+    file_location = os.path.join(user_folder, file.filename)
 
     # Lưu file PDF
     with open(file_location, "wb") as buffer:
@@ -351,28 +370,52 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
 
     # Chia nội dung thành các đoạn nhỏ (chunk)
     chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+        
+    # Chuyển đổi filename sang ASCII
+    ascii_filename = convert_to_ascii(file.filename)
     
     for i, chunk in enumerate(chunks):
         embedding = embedding_model.encode(chunk).tolist()
-        
-        # Chuyển đổi filename sang ASCII
-        ascii_filename = convert_to_ascii(file.filename)
         
         # Tạo vector ID
         vector_id = f"{ascii_filename}_{i}"
         
         # Lưu vector vào Pinecone
-        pinecone_index.upsert([(vector_id, embedding, {"metadata": chunk})])
+        pinecone_index.upsert(
+            vectors=[(vector_id, embedding, {"metadata": chunk})],
+            namespace=f"{user["username"]}.{ascii_filename}",
+        )
+
+    # Lưu tên PDF vào users.collection
+    users_collection.update_one(
+        {"username": user["username"]},
+        {"$addToSet": {"pdfs_chat": ascii_filename}},
+        upsert=True
+    )
+
+@app.get("/user-pdfs-chat")
+async def get_user_pdfs_chat(current_user=Depends(get_current_user)):
+    # Tìm người dùng hiện tại
+    user = users_collection.find_one({"username": current_user["username"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
     
+    pdfs = user["pdfs_chat"]  # Lấy danh sách PDF từ thông tin người dùng
+    return {"pdfs": pdfs}   
 
 @app.post("/chat")
-async def chat_with_pdf(request: ChatRequest):
+async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_user)):
+    # Tìm người dùng hiện tại
+    user = users_collection.find_one({"username": current_user["username"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
     try:
         query = request.query
         query_embedding = embedding_model.encode(query).tolist()
 
+        print(f"{user["username"]}.{request.pdf}")
         search_results = pinecone_index.query(
-            namespace="",
+            namespace=f"{user["username"]}.{request.pdf}",
             vector=query_embedding, 
             top_k=4, 
             include_metadata=True

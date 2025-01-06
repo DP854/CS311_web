@@ -11,7 +11,6 @@ from passlib.context import CryptContext
 import jwt
 from datetime import datetime, timedelta
 from bson import ObjectId
-import asyncio
 from googletrans import Translator
 from langdetect import detect
 from pinecone import Pinecone
@@ -182,7 +181,7 @@ def save_to_mongo(quiz_data, quiz_name, user):
         )
 
 # Save questions to CSV
-async def get_csv(file_path, user):
+async def save_quiz(file_path, user):
     ques_list = await llm_pipeline(file_path)  # Await the LLM pipeline
     
     # Convert questions into quiz format
@@ -194,24 +193,9 @@ async def get_csv(file_path, user):
             "answer": str(question['answer'])  # Convert answer to string ('True' or 'False')
         })
 
-    base_folder = 'static/'
-    if not os.path.isdir(base_folder):
-        os.mkdir(base_folder)
     quiz_name = os.path.splitext(os.path.basename(file_path))[0]
-    output_file = os.path.join(base_folder, f"{quiz_name}.csv")
     
     # Save the quiz to MongoDB (including all questions)
     save_to_mongo(quiz_data, quiz_name, user)
-    
-    # Save the data to a CSV file
-    with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["Question", "Answer"])
-
-        for question in ques_list:
-            # Convert the boolean answer to string for the CSV file
-            csv_writer.writerow([question['question'], str(question['answer'])])
-
-    return output_file
 
 

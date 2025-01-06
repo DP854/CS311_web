@@ -29,7 +29,10 @@ const Upload = () => {
 
     try {
       const uploadResponse = await axios.post("http://localhost:8000/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, 
+        },
       });
 
       if (uploadResponse.data.filename) {
@@ -43,6 +46,7 @@ const Upload = () => {
 
           if (processResponse.data) {
             alert("Tải lên và tạo quiz thành công!");
+            window.location.reload();
             navigate("/home");
           }
         } else if (action === "chatWithBot") {
@@ -55,6 +59,7 @@ const Upload = () => {
 
             if(chatResponse.data) {
               alert("Tải lên và tạo chat thành công!");
+              window.location.reload();
           }
         }
       }
