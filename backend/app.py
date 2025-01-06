@@ -213,10 +213,8 @@ async def delete_quiz(quiz_name: str, current_user=Depends(get_current_user)):
     
     # Xóa tệp PDF tương ứng trong thư mục static
     file_location = os.path.join("static", f"{quiz_name}.pdf")
-    file_location_csv = os.path.join("static", f"{quiz_name}.csv")
     if os.path.exists(file_location):
         os.remove(file_location)
-        os.remove(file_location_csv)
     
     return {"message": f"Quiz '{quiz_name}' đã bị xóa thành công."}
 
@@ -342,10 +340,7 @@ async def process_pdf_to_quiz(file: UploadFile, current_user=Depends(get_current
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
     
-    csv_file = await save_quiz(file_location, user)
-    csv_filename = os.path.basename(csv_file)
-
-    return {"csvFilename": csv_filename}
+    await save_quiz(file_location, user)
 
 @app.post("/process-pdf-to-chat")
 async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current_user)):
