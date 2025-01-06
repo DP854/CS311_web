@@ -61,7 +61,7 @@ class Question(BaseModel):
 
 class ChatRequest(BaseModel):
     query: str
-    pdf: str
+    pdf: Optional[str]
 
 def get_current_user(authorization: str = Header(None)):
     if not authorization:
@@ -416,12 +416,22 @@ async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_u
         query_embedding = embedding_model.encode(query).tolist()
 
         print(f"{user["username"]}.{request.pdf}")
-        search_results = pinecone_index.query(
-            namespace=f"{user["username"]}.{request.pdf}",
-            vector=query_embedding, 
-            top_k=4, 
-            include_metadata=True
-            )
+        search_results = []
+        if(request.pdf) :
+            search_results = pinecone_index.query(
+                namespace=f"{user["username"]}.{request.pdf}",
+                vector=query_embedding, 
+                top_k=4, 
+                include_metadata=True
+                )
+        # Nếu người dùng không chọn PDF hoặc không có PDF thì tìm trong namespace mặc định
+        else :
+            search_results = pinecone_index.query(
+                namespace=f"",
+                vector=query_embedding, 
+                top_k=4, 
+                include_metadata=True
+                )
         
         # context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
         # Thay thế phần xử lý context
