@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -42,15 +43,22 @@ const Chatbot = () => {
                 ? "bg-blue-500 text-white self-end ml-auto"
                 : "bg-gray-200 text-gray-800 self-start mr-auto"
                 }`}
-                dangerouslySetInnerHTML={{
-                  __html: message.text
-                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") // Thay **text** thành <strong>text</strong>
-                    .replace(/\*(.+?)\*/g, "<em>$1</em>") // Thay *text* thành <em>text</em>
-                    .replace(/^\*\s(.+)/gm, "• $1") // Thay dấu * đầu dòng thành dấu gạch đầu dòng
-                    .replace(/\n/g, "<br />") // Thay ký tự xuống dòng thành <br />
-                }}>
-                {/*  >{message.text} */}
-            </div>  
+            // dangerouslySetInnerHTML={{
+            //   __html: message.text
+            //     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") // Thay **text** thành <strong>text</strong>
+            //     .replace(/\*(.+?)\*/g, "<em>$1</em>") // Thay *text* thành <em>text</em>
+            //     .replace(/^\*\s(.+)/gm, "• $1") // Thay dấu * đầu dòng thành dấu gạch đầu dòng
+            //     .replace(/\n/g, "<br />") // Thay ký tự xuống dòng thành <br />
+            // }}>
+            //  >{message.text} 
+            >
+              <ReactMarkdown>
+                {message && message.text ? message.text : "I am a chatbot designed to answer questions about the PDF you have provided. \
+                        Your question does not fall within the system's setup or may not be related to \
+                        the content of the PDF you uploaded. Please ask another question, \
+                        and I will assist you."}
+              </ReactMarkdown>
+            </div>
           ))}
         </div>
         <div className="flex space-x-2 mt-4">

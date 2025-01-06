@@ -370,17 +370,33 @@ async def chat_with_pdf(request: ChatRequest):
         search_results = pinecone_index.query(
             namespace="",
             vector=query_embedding, 
-            top_k=3, 
+            top_k=4, 
             include_metadata=True
             )
         
-        context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
+        # context = "\n".join(match.metadata["metadata"] for match in search_results["matches"])
+        # Thay thế phần xử lý context
+        context = "\n".join(
+            str(match.metadata.get("metadata", "")) 
+            for match in search_results.get("matches", [])
+        )
+        
+        # Tạo một dictionary chỉ với các thông tin cần thiết
+        formatted_results = [
+            {
+                "id": match.get("id", ""),
+                "score": match.get("score", 0),
+                "metadata": match.metadata.get("metadata", "")  # Chỉ lấy metadata cần thiết
+            }
+            for match in search_results.get("matches", [])
+        ]
+        
         prompt = (
                     f"Context:\n{context}\n\n"
                     f"User Query:\n{query}\n\n"
                     f"Instructions:\n"
                     f"1. Provide a clear and concise response to the user's query based on the provided context.\n"
-                    f"2. Ensure the response is formatted for display in a report, not includes any specific character like (**) and adhering to literature-friendly syntax.\n"
+                    f"2. Ensure the response is formatted for display in a report, not includes any specific character like (**) and adhering to react-markdown syntax.\n"
                     f"3. If additional information is required or the query cannot be answered fully, provide a helpful and polite clarification to the user \n\n"
                     f"Example format:\n"
                     f"Respond by saying that the answer to the question has been found, and smoothly lead into the answer\n"
@@ -396,10 +412,17 @@ async def chat_with_pdf(request: ChatRequest):
                         input_variables=["context", "query"]
         )
         formatted_prompt = question_prompt.format(context=context, query=query)
-        response = model.generate_content(formatted_prompt).candidates[0].content.parts[0].text
+        response = (
+                    model.generate_content(formatted_prompt).candidates[0].content.parts[0].text
+                    if formatted_results != []
+                    else "I am a chatbot designed to answer questions about the PDF you have provided. \
+                        Your question does not fall within the system's setup or may not be related to \
+                        the content of the PDF you uploaded. Please ask another question, \
+                        and I will assist you."
+        )
         return { 
             "response": response,
-            "search_results": search_results["matches"] if search_results.get("matches") else "Không có dữ liệu từ search"
+            "search_results": formatted_results if formatted_results != [] else "Không có dữ liệu từ search"
         }
     except Exception as e:
         return { "error": str(e) }
