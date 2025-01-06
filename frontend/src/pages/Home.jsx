@@ -33,15 +33,18 @@ const Home = () => {
   }, [token]);
 
   const handleDelete = async (quizName) => {
-    try {
-      await axios.delete(`http://localhost:8000/api/quizzes/${quizName}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setQuizzes(quizzes.filter((quiz) => quiz.quiz_name !== quizName));
-    } catch (err) {
-      setError("Không thể xóa quiz.");
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa quiz "${quizName}" không?`);
+    if (confirmed) {
+      try {
+        await axios.delete(`http://localhost:8000/api/quizzes/${quizName}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setQuizzes(quizzes.filter((quiz) => quiz.quiz_name !== quizName));
+      } catch (err) {
+        setError("Không thể xóa quiz.");
+      }
     }
   };
 
