@@ -116,9 +116,11 @@ const Home = () => {
           >
             Thêm Quiz
           </Link>
+
           <div className="bg-white text-black p-6 rounded-lg shadow hover:bg-gray-200 transition w-full text-center">
             <Upload />
           </div>
+          
           <Link
             to="/chat"
             className="bg-green-500 text-white py-3 px-6 rounded-lg shadow hover:bg-green-700 transition w-full text-center"

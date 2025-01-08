@@ -80,7 +80,7 @@ const Upload = () => {
             <p><strong>Tên file:</strong> {filename}</p>
             <p><strong>Kích thước:</strong> {(pdfFile.size / 1024).toFixed(2)} KB</p>
             <iframe
-              src={URL.createObjectURL(pdfFile)}
+              src={pdfFile ? URL.createObjectURL(pdfFile): ''}
               title="PDF Preview"
               className="w-full h-64 mt-4 border"
             ></iframe>

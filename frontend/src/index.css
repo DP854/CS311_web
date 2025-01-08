@@ -12,6 +12,14 @@ code {
     monospace;
 }
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* .truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} */

@@ -111,7 +111,7 @@ const QuizDetail = () => {
                       //   )
                       // )}
                       className={`block p-2 rounded cursor-pointer transition-colors
-                        ${isSelected && submitted ? (isCorrect ? 'text-green-600' : 'text-red-600') : ''}
+                        ${isSelected && submitted ? (isCorrect ? 'text-green-600 font-bold' : 'text-red-600 font-bold') : ''}
                         ${isSelected ? 'bg-gray-100' : 'hover:bg-gray-100'}
                         
                         `}
