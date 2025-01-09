@@ -8,3 +8,7 @@
 <p>Làm bài quiz</p>
 <p>Upload PDF sang quiz (LangChain)</p>
 <p>Chat với PDF (LangChain + Gemini + SentenceTransformer + PineCone)</p>
+
+# Bổ sung
+<p>Cài thêm tesseract vào máy: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe</p>
+<p>pip install PyMuPDF pytesseract camelot-py[cv]</p>
