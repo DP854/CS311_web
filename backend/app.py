@@ -160,8 +160,6 @@ async def create_quiz(quiz: Quiz, current_user=Depends(get_current_user)):
         {"$push": {"quizzes": quiz._id}}
     )
 
-    print(quiz)
-
     return quiz
 
 # API sửa quiz
@@ -350,8 +348,6 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
         raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
     
     upload_folder = "static"
-    #if not os.path.exists(upload_folder):
-        #os.makedirs(upload_folder)
     user_folder = os.path.join(upload_folder, user["username"])
     
     # Tạo thư mục gốc và thư mục con nếu chưa tồn tại
@@ -366,25 +362,44 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
     # Tải và xử lý nội dung PDF
     processed_documents = await process_and_translate(file_location)
 
-    text = "\n".join([doc for doc in processed_documents])
+    text = "\n".join([doc["page_content"] for doc in processed_documents])
     
     text = clean_text(text)
 
-    # Chia nội dung thành các đoạn nhỏ (chunk)
-    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    # Chia nội dung theo trang
+    chunks = []
+    current_chunk = ""
+    page_number = None
+
+    for doc in processed_documents:
+        if doc["page_number"] != page_number:
+            if current_chunk:
+                chunks.append({
+                    "text": current_chunk,
+                    "page_number": page_number
+                })
+            current_chunk = doc["page_content"]
+            page_number = doc["page_number"]
+        else:
+            current_chunk += "\n" + doc["page_content"]
+    if current_chunk:
+        chunks.append({
+            "text": current_chunk,
+            "page_number": page_number
+        })
         
     # Chuyển đổi filename sang ASCII
     ascii_filename = convert_to_ascii(file.filename)
     
     for i, chunk in enumerate(chunks):
-        embedding = embedding_model.encode(chunk).tolist()
+        embedding = embedding_model.encode(chunk["text"]).tolist()
         
         # Tạo vector ID
         vector_id = f"{user["username"]}_{ascii_filename}_{i}"
         
         # Lưu vector vào Pinecone
         pinecone_index.upsert(
-            vectors=[(vector_id, embedding, {"metadata": chunk})],
+            vectors=[(vector_id, embedding, {"metadata": chunk["text"], "page_number": chunk["page_number"]})],
             namespace=f"{user["username"]}.{ascii_filename}",
         )
 
@@ -415,7 +430,6 @@ async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_u
         query = request.query
         query_embedding = embedding_model.encode(query).tolist()
 
-        print(f"{user["username"]}.{request.pdf}")
         search_results = []
         if(request.pdf) :
             search_results = pinecone_index.query(

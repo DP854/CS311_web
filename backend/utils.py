@@ -1,9 +1,10 @@
 import os
-import csv
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import re
 from langchain_community.document_loaders import PyPDFLoader
+from PIL import Image
+import pytesseract, fitz, camelot, io
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from src.QAGenerator import generate_question_from_chunks
@@ -17,6 +18,9 @@ from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 
 load_dotenv()
+
+# Pytesseract config
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Pinecone
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
@@ -81,33 +85,91 @@ db = client.get_database()
 users_collection = db.users
 quizzes_collection = db.quizzes 
 
+# Ảnh sang text
+def extract_text_from_image(file_path):
+    doc = fitz.open(file_path)
+    image_text = []
+    page_text = ""
+
+    for page_number in range(len(doc)):
+        page = doc[page_number]
+        images = page.get_images(full=True)
+
+        for img_index, img in enumerate(images):
+            xref = img[0]
+            base_image = doc.extract_image(xref)
+            image_bytes = base_image["image"]
+            image = Image.open(io.BytesIO(image_bytes))
+
+            page_text += f"(Image {img_index + 1}):\n"
+            page_text += pytesseract.image_to_string(image)
+
+        if page_text.strip():
+            image_text.append({"text": page_text, "page_number": page_number + 1})
+
+    return image_text
+
+# Bảng sang text
+def extract_text_from_table(file_path):
+    tables = camelot.read_pdf(file_path, pages="all")
+    table_text = []
+    table_count = 1
+
+    for table in tables:
+        page_number = table.page
+        table_text.append({"text": f"(Table {table_count}):\n" + table.df.to_string(), "page_number": page_number})
+        table_count += 1
+
+    return table_text
+
 # Xử lý PDF
 def file_processing(file_path):
     loader = PyPDFLoader(file_path)
     data = loader.load()
 
-    question_gen = ''
-    max_token = 5012
+    document_ques_gen = []
 
+    # Trích xuất văn bản từ ảnh
+    image_text = extract_text_from_image(file_path)
+
+    # Trích xuất văn bản từ bảng
+    table_text = extract_text_from_table(file_path)
+
+    page_number = 1
+
+    # Duyệt qua từng trang của PDF
     for page in data:
-        question_gen += page.page_content
+        page_content = page.page_content
 
-    # Loại bỏ xuống dòng không cần thiết trong đoạn văn
-    question_gen = re.sub(r"(?<!\n)\n(?!\n)", " ", question_gen)
+        # Gắn text từ image ở trang hiện tại
+        for img_text in image_text:
+            if img_text["page_number"] == page_number:
+                page_content += "\n" + img_text["text"]
 
-    # Tách các phần quan trọng (tiêu đề, danh sách, bảng)
-    question_gen = re.sub(r"(\n{2,})", "\n\n", question_gen)  # Chuẩn hóa ngắt dòng
-    question_gen = re.sub(r"(?<=\w)-\s+", "", question_gen)  # Gộp các từ bị phân mảnh
+        # Gắn text từ bảng ở trang hiện tại
+        for tab_text in table_text:
+            if tab_text["page_number"] == page_number:
+                page_content += "\n" + tab_text["text"] 
+        
+        # Xử lý văn bản
+        page_content = re.sub(r"(?<!\n)\n(?!\n)", " ", page_content)
+        page_content = re.sub(r"(\n{2,})", "\n\n", page_content)
+        page_content = re.sub(r"(?<=\w)-\s+", "", page_content)
 
-    # Chia nhỏ văn bản thành các đoạn có kích thước nhỏ hơn
-    splitter_ques_gen = RecursiveCharacterTextSplitter(
-        chunk_size=max_token,
-        chunk_overlap=200
-    )
-    chunks_ques_gen = splitter_ques_gen.split_text(question_gen)
+        splitter_ques_gen = RecursiveCharacterTextSplitter(
+            chunk_size=5012,
+            chunk_overlap=200
+        )
+        chunks = splitter_ques_gen.split_text(page_content)
 
-    # Tạo các Document từ các đoạn đã chia
-    document_ques_gen = [Document(page_content=t) for t in chunks_ques_gen]
+        for chunk in chunks:
+            doc = Document(
+                page_content=chunk,
+                metadata={"page_number": page_number}
+            )
+            document_ques_gen.append(doc)
+
+        page_number += 1
 
     return document_ques_gen
 
@@ -134,7 +196,11 @@ async def translate_documents(documents):
     for document in documents:
         page_content = document.page_content  # Lấy nội dung trang
         translated_text = await translate_text(page_content)  # Dịch nội dung trang
-        translated_documents.append(translated_text)  # Lưu kết quả dịch vào danh sách
+        # translated_documents.append(translated_text)  # Lưu kết quả dịch vào danh sách
+        translated_documents.append({
+            'page_content': translated_text,
+            'page_number': document.metadata.get("page_number", None)
+        })
     
     return translated_documents
 
@@ -146,12 +212,11 @@ async def process_and_translate(file_path):
 async def llm_pipeline(file_path):
     document_ques_gen = file_processing(file_path) 
     translated_documents = await translate_documents(document_ques_gen)
-    # quiz = generate_question_from_chunks(document_ques_gen)
     # Thêm từng chunk vào model để xử lí
     quiz_from_chunk = []
-    for text in translated_documents:
-        quizz = generate_question_from_chunks(text)
-        quiz_from_chunk += quizz
+    for doc in translated_documents:
+        quiz = generate_question_from_chunks(doc['page_content'])
+        quiz_from_chunk += quiz
     return quiz_from_chunk
 
 # Lưu quiz vào MongoDB
@@ -180,7 +245,7 @@ def save_to_mongo(quiz_data, quiz_name, user):
             {"$push": {"quizzes": id}}
         )
 
-# Save questions to CSV
+# Save questions to quiz
 async def save_quiz(file_path, user):
     ques_list = await llm_pipeline(file_path)  # Await the LLM pipeline
     
