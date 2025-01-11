@@ -122,8 +122,37 @@ def extract_text_from_table(file_path):
 
     return table_text
 
-# Xử lý PDF
-def file_processing(file_path):
+# Xử lý PDF để tạo quiz
+def file_processing_quiz(file_path):
+    loader = PyPDFLoader(file_path)
+    data = loader.load()
+
+    question_gen = ""
+
+    for page in data:
+        question_gen += page.page_content
+
+    # Loại bỏ xuống dòng không cần thiết trong đoạn văn
+    question_gen = re.sub(r"(?<!\n)\n(?!\n)", " ", question_gen)
+
+    # Tách các phần quan trọng (tiêu đề, danh sách, bảng)
+    question_gen = re.sub(r"(\n{2,})", "\n\n", question_gen)  # Chuẩn hóa ngắt dòng
+    question_gen = re.sub(r"(?<=\w)-\s+", "", question_gen)  # Gộp các từ bị phân mảnh
+
+    # Chia nhỏ văn bản thành các đoạn có kích thước nhỏ hơn
+    splitter_ques_gen = RecursiveCharacterTextSplitter(
+        chunk_size=5012,
+        chunk_overlap=200
+    )
+    chunks_ques_gen = splitter_ques_gen.split_text(question_gen)
+
+    # Tạo các Document từ các đoạn đã chia
+    document_ques_gen = [Document(page_content=t) for t in chunks_ques_gen]
+
+    return document_ques_gen    
+
+# Xử lý PDF cho chatbot
+def file_processing_chat(file_path):
     loader = PyPDFLoader(file_path)
     data = loader.load()
 
@@ -188,8 +217,19 @@ async def translate_text(document_ques_gen):
         # Nếu ngôn ngữ không phải là tiếng Việt, trả về văn bản gốc
         return document_ques_gen
 
-#Chuyển text qua tiếng anh
-async def translate_documents(documents):
+async def translate_documents_quiz(documents):
+    # Lặp qua từng document và dịch nội dung
+    translated_documents = []
+    
+    for document in documents:
+        page_content = document.page_content  # Lấy nội dung trang
+        translated_text = await translate_text(page_content)  # Dịch nội dung trang
+        translated_documents.append(translated_text)  # Lưu kết quả dịch vào danh sách
+    
+    return translated_documents
+
+#Chuyển doc qua tiếng anh
+async def translate_documents_chat(documents):
     # Lặp qua từng document và dịch nội dung
     translated_documents = []
     
@@ -204,18 +244,18 @@ async def translate_documents(documents):
     
     return translated_documents
 
-async def process_and_translate(file_path):
-    document_ques_gen = file_processing(file_path) 
-    translated_documents = await translate_documents(document_ques_gen)
+async def process_and_translate_chat(file_path):
+    document_ques_gen = file_processing_chat(file_path) 
+    translated_documents = await translate_documents_chat(document_ques_gen)
     return translated_documents
 
-async def llm_pipeline(file_path):
-    document_ques_gen = file_processing(file_path) 
-    translated_documents = await translate_documents(document_ques_gen)
+async def llm_pipeline_quiz(file_path):
+    document_ques_gen = file_processing_quiz(file_path) 
+    translated_documents = await translate_documents_quiz(document_ques_gen)
     # Thêm từng chunk vào model để xử lí
     quiz_from_chunk = []
-    for doc in translated_documents:
-        quiz = generate_question_from_chunks(doc['page_content'])
+    for text in translated_documents:
+        quiz = generate_question_from_chunks(text)
         quiz_from_chunk += quiz
     return quiz_from_chunk
 
@@ -247,16 +287,17 @@ def save_to_mongo(quiz_data, quiz_name, user):
 
 # Save questions to quiz
 async def save_quiz(file_path, user):
-    ques_list = await llm_pipeline(file_path)  # Await the LLM pipeline
+    ques_list = await llm_pipeline_quiz(file_path)  # Await the LLM pipeline
     
     # Convert questions into quiz format
     quiz_data = []
     for question in ques_list:
-        quiz_data.append({
-            "question": question['question'],  # Extract the question
-            "options": question['options'],    # Extract the options
-            "answer": str(question['answer'])  # Convert answer to string ('True' or 'False')
-        })
+        if type(question) == dict:
+            quiz_data.append({
+                "question": question['question'],  # Extract the question
+                "options": question['options'],    # Extract the options
+                "answer": str(question['answer'])  # Convert answer to string ('True' or 'False')
+            })
 
     quiz_name = os.path.splitext(os.path.basename(file_path))[0]
     

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from bson import ObjectId
 from typing import List, Optional
 import os
-from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, save_quiz, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate, clean_text
+from utils import users_collection, hash_password, verify_password, create_jwt, decode_jwt, save_quiz, quizzes_collection, pinecone_index, embedding_model, pinecone_index, process_and_translate_chat, clean_text
 from langchain.prompts import PromptTemplate
 from src.QAGenerator import model
 import unicodedata
@@ -241,19 +241,6 @@ async def attempt_quiz(quiz_name: str, answers: List[str], current_user=Depends(
     quiz = quizzes_collection.find_one({"quiz_name": quiz_name})
     if not quiz:
         raise HTTPException(status_code=404, detail="Không tìm thấy quiz")
-
-    # # Kiểm tra nếu câu trả lời là "True" hoặc "False", chuyển nó thành boolean
-    # processed_answers = []
-    # for ans in answers:
-    #     if ans == "True":
-    #         processed_answers.append(True)
-    #     elif ans == "False":
-    #         processed_answers.append(False)
-    #     else:
-    #         try:
-    #             processed_answers.append(int(ans))  # Chuyển đổi chỉ mục thành số nguyên
-    #         except ValueError:
-    #             processed_answers.append(ans)  # Nếu không phải "True", "False" hay số, giữ nguyên
     
     # Tính điểm
     correct_answers = [q["answer"] for q in quiz["questions"]]
@@ -261,7 +248,6 @@ async def attempt_quiz(quiz_name: str, answers: List[str], current_user=Depends(
 
     # Lưu kết quả làm quiz
     attempt = {
-        "username": current_user["username"],
         "answers": answers,
         "score": score,
     }
@@ -360,7 +346,7 @@ async def process_pdf_to_chat(file: UploadFile, current_user=Depends(get_current
         buffer.write(await file.read())
     
     # Tải và xử lý nội dung PDF
-    processed_documents = await process_and_translate(file_location)
+    processed_documents = await process_and_translate_chat(file_location)
 
     text = "\n".join([doc["page_content"] for doc in processed_documents])
     
