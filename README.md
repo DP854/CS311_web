@@ -6,7 +6,7 @@
 <p>Đăng ký, Đăng nhập, Đăng xuất</p>
 <p>CRUD quiz</p>
 <p>Làm bài quiz</p>
-<p>Upload PDF sang quiz (LangChain): Dùng dữ liệu văn bản (Sau khi kiểm tra dữ liệu mô tả hình ảnh và mô tả bảng biểu thì nó tạo rất nhiều câu hỏi vô nghĩa, ví dụ như câu hỏi giá trị dữ liệu trong bảng hay câu hỏi có gì trong hình mà không liên quan đến nội dung chính trong PDF. Vì thế tôi quyết định không cho dữ liệu này vào pineline quiz)</p>
+<p>Upload PDF sang quiz (LangChain): Dùng dữ liệu văn bản (Sau khi kiểm tra dữ liệu mô tả hình ảnh và mô tả bảng thì nó tạo rất nhiều câu hỏi vô nghĩa, ví dụ như câu hỏi giá trị dữ liệu trong bảng hay câu hỏi có gì trong hình mà không liên quan đến nội dung chính trong PDF. Vì thế tôi quyết định không cho dữ liệu này vào pineline quiz)</p>
 <p>Chat với PDF (LangChain + Gemini + SentenceTransformer + PineCone): Dùng dữ liệu văn bản, mô tả hình ảnh, mô tả bảng biểu</p>
 <p>Để xử lý PDF với 2 dữ liệu khác nhau cho 2 tính năng trên thì tôi quyết định tách thành 2 hàm xử lý PDF khác nhau</p>
 
