@@ -90,19 +90,23 @@ def extract_text_from_image(file_path):
     doc = fitz.open(file_path)
     image_text = []
     page_text = ""
+    img_count = 1
 
     for page_number in range(len(doc)):
         page = doc[page_number]
         images = page.get_images(full=True)
 
-        for img_index, img in enumerate(images):
+        for img in images:
             xref = img[0]
+
             base_image = doc.extract_image(xref)
             image_bytes = base_image["image"]
+
             image = Image.open(io.BytesIO(image_bytes))
 
-            page_text += f"(Image {img_index + 1}):\n"
+            page_text += f"(Image {img_count}):\n"
             page_text += pytesseract.image_to_string(image)
+            img_count += 1
 
         if page_text.strip():
             image_text.append({"text": page_text, "page_number": page_number + 1})

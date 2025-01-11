@@ -145,10 +145,6 @@ async def create_quiz(quiz: Quiz, current_user=Depends(get_current_user)):
     user = users_collection.find_one({"username": current_user["username"]})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-
-    # Kiểm tra nếu quiz đã tồn tại trong danh sách quizzes của người dùng
-    if "quizzes" not in user or any(existing_quiz["_id"] == quiz._id for existing_quiz in user["quizzes"]):
-        raise HTTPException(status_code=400, detail="Quiz đã tồn tại.")
     
     # Thêm quiz vào cơ sở dữ liệu
     result = quizzes_collection.insert_one(quiz.dict())

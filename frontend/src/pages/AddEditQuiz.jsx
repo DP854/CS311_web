@@ -110,7 +110,7 @@ const AddQuiz = () => {
                 </div>
               ))}
             <div className="mt-4">
-              <label>Đáp án</label>
+              <label>Đáp án (Nhập True/False hoặc 0 - 3 nếu là Multiple Choice)</label>
               <input
                 type="text"
                 value={q.answer}
@@ -253,7 +253,7 @@ const EditQuiz = () => {
               </div>
             ))}
             <div className="mt-4">
-              <label>Đáp án</label>
+              <label>Đáp án (Nhập True/False hoặc 0 - 3 nếu là Multiple Choice)</label>
               <input
                 type="text"
                 value={q.answer}
