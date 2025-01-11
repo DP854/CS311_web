@@ -79,6 +79,13 @@ def generate_question_from_chunks(text):
             return quiz_json
     except Exception as e:
         return str(e)
+input_text = """
+HTML is a markup language used for structuring content on the web.
 
+CSS (Cascading Style Sheets) is a style sheet language used to describe the presentation of a document written in HTML or XML (including XML-based languages such as SVG or XHTML). CSS enables developers to control the layout, design, and visual appearance of web pages, including aspects like colors, fonts, spacing, alignment, and animations..
+"""
+
+quiz = generate_question_from_chunks(input_text)
+print(quiz)
 # Export the function for use in app.py
 __all__ = ["generate_question_from_chunks, model"]
