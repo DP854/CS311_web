@@ -417,7 +417,7 @@ async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_u
             search_results = pinecone_index.query(
                 namespace=f"{user["username"]}.{request.pdf}",
                 vector=query_embedding, 
-                top_k=5, 
+                top_k=3, 
                 include_metadata=True
                 )
         # Nếu người dùng không chọn PDF hoặc không có PDF thì tìm trong namespace mặc định
@@ -425,7 +425,7 @@ async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_u
             search_results = pinecone_index.query(
                 namespace=f"",
                 vector=query_embedding, 
-                top_k=4, 
+                top_k=3, 
                 include_metadata=True
                 )
         

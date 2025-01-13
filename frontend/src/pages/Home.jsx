@@ -10,27 +10,31 @@ const Home = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuizzes = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get("http://localhost:8000/api/quizzes", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setQuizzes(response.data);
-      } catch (err) {
-        setError("Không thể tải danh sách quiz.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchQuizzes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("http://localhost:8000/api/quizzes", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setQuizzes(response.data);
+    } catch (err) {
+      setError("Không thể tải danh sách quiz.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (token) {
       fetchQuizzes();
     }
   }, [token]);
+
+  const handleUploadSuccess = () => {
+    fetchQuizzes();
+  };
 
   const handleDelete = async (quizName) => {
     const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa quiz "${quizName}" không?`);
@@ -118,7 +122,7 @@ const Home = () => {
           </Link>
 
           <div className="bg-white text-black p-6 rounded-lg shadow hover:bg-gray-200 transition w-full text-center">
-            <Upload />
+            <Upload onUploadSuccess={handleUploadSuccess}/>
           </div>
           
           <Link

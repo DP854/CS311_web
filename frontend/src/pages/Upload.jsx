@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Upload = () => {
+const Upload = ({ onUploadSuccess }) => {
   const [pdfFile, setPdfFile] = useState(null);
   const [filename, setFilename] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -43,11 +40,9 @@ const Upload = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-
-          if (processResponse.data) {
-            alert("Tải lên và tạo quiz thành công!");
-            window.location.reload();
-            navigate("/home");
+          if (processResponse) {
+            alert("Tạo quiz thành công!");
+            onUploadSuccess();
           }
         } else if (action === "chatWithBot") {
             const chatResponse = await axios.post("http://localhost:8000/process-pdf-to-chat", formData, {
@@ -57,9 +52,9 @@ const Upload = () => {
               },
             });
 
-            if(chatResponse.data) {
-              alert("Tải lên và tạo chat thành công!");
-              window.location.reload();
+            if(chatResponse) {
+              alert("Lưu vào chat thành công!");
+              onUploadSuccess();
           }
         }
       }
