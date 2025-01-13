@@ -441,7 +441,7 @@ async def chat_with_pdf(request: ChatRequest, current_user=Depends(get_current_u
             {
                 "id": match.get("id", ""),
                 "score": match.get("score", 0),
-                "metadata": match.metadata.get("metadata", "")  # Chỉ lấy metadata cần thiết
+                "metadata": match.metadata.get("metadata", ""),  # Chỉ lấy metadata cần thiết
             }
             for match in search_results.get("matches", [])
         ]
