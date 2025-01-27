@@ -9,7 +9,17 @@
    ```bash
    pip install -r requirements.txt
    ```
-3. Start the FastAPI server:
+3. Create a .env file and add the following environment variables:
+   ```bash
+   GEMINI_API_KEY=
+
+   MONGO_URI=
+   
+   JWT_SECRET=mySuperSecretKey
+   JWT_ALGORITHM="HS256"
+   JWT_EXPIRATION=3600
+   ```
+5. Start the FastAPI server:
    ```bash
    uvicorn app:app --reload
    ```
