@@ -1,15 +1,61 @@
-# Cài đặt và chạy project
-<p>backend: mở Terminal => cd backend => pip install -r requirements.txt => uvicorn app:app --reload (chạy FastAPI)</p>
-<p>frontend: mở Terminal thứ hai => cd frontend => npm install (sau khi đã cài NodeJS) => cài TailwindCSS => npm start (chạy React)</p>
+# How to Set Up
 
-# Feature
-<p>Đăng ký, Đăng nhập, Đăng xuất</p>
-<p>CRUD quiz</p>
-<p>Làm bài quiz</p>
-<p>Upload PDF sang quiz (LangChain): Dùng dữ liệu văn bản (Sau khi kiểm tra dữ liệu mô tả hình ảnh và mô tả bảng thì nó tạo rất nhiều câu hỏi vô nghĩa, ví dụ như câu hỏi giá trị dữ liệu trong bảng hay câu hỏi có gì trong hình mà không liên quan đến nội dung chính trong PDF. Vì thế tôi quyết định không cho dữ liệu này vào pineline quiz)</p>
-<p>Chat với PDF (LangChain + Gemini + SentenceTransformer + PineCone): Dùng dữ liệu văn bản, mô tả hình ảnh, mô tả bảng biểu</p>
-<p>Để xử lý PDF với 2 dữ liệu khác nhau cho 2 tính năng trên thì tôi quyết định tách thành 2 hàm xử lý PDF khác nhau</p>
+### Backend Setup
+1. Open a terminal and navigate to the backend folder:
+   ```bash
+   cd backend
+   ```
+2. Install the required Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the FastAPI server:
+   ```bash
+   uvicorn app:app --reload
+   ```
 
-# Bổ sung
-<p>Cài thêm tesseract vào máy: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe</p>
-<p>pip install PyMuPDF pytesseract camelot-py[cv]</p>
+### Frontend Setup
+1. Open a second terminal and navigate to the frontend folder:
+   ```bash
+   cd frontend
+   ```
+2. Install Node.js dependencies (ensure Node.js is installed):
+   ```bash
+   npm install
+   ```
+3. Install TailwindCSS.
+4. Start the React development server:
+   ```bash
+   npm start
+   ```
+
+### Additional Setup
+1. Install Tesseract OCR on your system:
+   [Download Tesseract OCR](https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe)
+2. Install additional Python packages:
+   ```bash
+   pip install PyMuPDF pytesseract camelot-py[cv]
+   ```
+
+
+# Features
+
+### 1. Authentication
+- User can **Register**, **Log In**, and **Log Out**.
+
+### 2. Quiz Management
+- Full **CRUD** operations for quizzes, allowing users to create, read, update, and delete quizzes.
+
+### 3. Quiz Participation
+- Users can **take quizzes** and submit their answers.
+
+### 4. PDF to Quiz Conversion (LangChain)
+- Converts **textual data** from PDFs into quizzes.
+- **Exclusion of specific data types:** After analyzing the content, questions generated from image descriptions and table data often lack meaningful context (e.g., questions about table values or unrelated image content). These data types are excluded from the quiz generation pipeline.
+
+### 5. Chat with PDF
+- Features powered by **LangChain**, **Gemini**, **SentenceTransformer**, and **Pinecone**.
+- Supports interaction with:
+  - **Textual data** from the PDF.
+  - **Image descriptions** extracted from the PDF.
+  - **Table data** extracted from the PDF.
